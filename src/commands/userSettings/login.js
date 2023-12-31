@@ -169,7 +169,7 @@ module.exports = {
                 i.reply({ embeds: [embed], ephemeral: true });
               }
             })
-            .catch((err) =>
+            .catch((error) =>
               console.log("No modal submit interaction was collected")
             );
         }
