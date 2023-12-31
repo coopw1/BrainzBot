@@ -7,6 +7,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   ApplicationCommandOptionType,
+  ComponentType,
 } = require("discord.js");
 
 const axios = require("axios").default;
@@ -58,7 +59,117 @@ module.exports = {
       });
 
       // Send the embed and row
-      interaction.reply({ embeds: [embed], components: [row] });
+      const message = await interaction.reply({
+        embeds: [embed],
+        components: [row],
+      });
+
+      // Create a collector that waits for the user to click the button
+      const buttonCollectorFilter = (i) => i.user.id === interaction.user.id;
+      const collector = message.createMessageComponentCollector({
+        ComponentType: ComponentType.Button,
+        filter: buttonCollectorFilter,
+      });
+
+      // Handle the collector
+      collector.on("collect", async (i) => {
+        // Check if the button was continue
+        if (i.customId === "continue") {
+          // User clicked continue
+
+          // Create a modal
+          const modal = new ModalBuilder({
+            title: "ListenBrainz User Token",
+            customId: "tokenModal",
+          });
+
+          // Create a text input
+          const tokenInput = new TextInputBuilder({
+            customId: "ListenBrainzToken",
+            label: "Enter your ListenBrainz User token",
+            style: TextInputStyle.Short,
+            required: true,
+            minLength: 36,
+            maxLength: 36,
+          });
+
+          // Create a row with the text input
+          const row = new ActionRowBuilder().addComponents(tokenInput);
+
+          // Add the text input to the modal
+          modal.addComponents(row);
+
+          // Send the modal
+          await i.showModal(modal);
+
+          // Create a collector that waits for the user to submit the modal
+          const modalCollectorFilter = (i) => i.user.id === i.user.id;
+          i.awaitModalSubmit({ time: 60_000, modalCollectorFilter })
+            .then(async (i) => {
+              // User submitted the modal
+
+              const token = i.fields.getTextInputValue("ListenBrainzToken");
+              let response;
+
+              try {
+                BASE_URL = "https://api.listenbrainz.org/1/validate-token";
+                AUTH_HEADER = {
+                  Authorization: `Token ${token}`,
+                };
+
+                // Make request to ListenBrainz
+                response = await axios.get(BASE_URL, {
+                  headers: AUTH_HEADER,
+                });
+              } catch (error) {
+                console.log("Error: " + error);
+              }
+
+              // Check if token is valid
+              if (response.data.valid) {
+                // Token is valid
+                // Save token to DB
+                try {
+                  const user = await userData.findOne({ userID: i.user.id });
+                  // Check if user is already in DB
+                  if (user) {
+                    // Update token if user is already in DB
+                    await userData.findOneAndUpdate(
+                      { userID: i.user.id },
+                      { ListenBrainzToken: token }
+                    );
+                  } else {
+                    // Create new user if user is not in DB
+                    await userData.create({
+                      userID: i.user.id,
+                      ListenBrainzToken: token,
+                    });
+                  }
+                } catch (error) {
+                  console.log(`Failed to save token to DB: ${error}`);
+                }
+
+                // Send confirmation
+                const embed = new EmbedBuilder()
+                  .setDescription(
+                    `✅ You have been logged in to .fmbot with the username [${response.data.user_name}](https://listenbrainz.org/user/${response.data.user_name}/)!`
+                  )
+                  .setColor("32cd32");
+                i.reply({ embeds: [embed], ephemeral: true });
+              } else {
+                // Token is not valid
+                // Send error
+                const embed = new EmbedBuilder()
+                  .setDescription("❌ Invalid token. Please try again.")
+                  .setColor("ba0000");
+                i.reply({ embeds: [embed], ephemeral: true });
+              }
+            })
+            .catch((err) =>
+              console.log("No modal submit interaction was collected")
+            );
+        }
+      });
     } else {
       // Token provided
 
