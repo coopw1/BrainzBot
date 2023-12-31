@@ -21,14 +21,17 @@ module.exports = {
       name: "token",
       description: "Enter your ListenBrainz User token",
       type: ApplicationCommandOptionType.String,
-      required: true,
+      required: false,
       minLength: 36,
       maxLength: 36,
     },
   ],
 
   callback: async (client, interaction) => {
+    // Check if user has provided a token
     if (!interaction.options.get("token")) {
+      // No token provided
+      // Send an embed with instructions
       const embed = new EmbedBuilder()
         .setDescription(
           "**[Click here to get your ListenBrainz User token](https://listenbrainz.org/profile/)**\n" +
@@ -42,18 +45,23 @@ module.exports = {
         )
         .setColor("ba0000");
 
+      // Create a button with the label "Continue"
       const continueButton = new ButtonBuilder({
         customId: "continue",
         label: "Continue",
         style: ButtonStyle.Primary,
       });
 
+      // Create a row with the button
       const row = new ActionRowBuilder({
         components: [continueButton],
       });
 
+      // Send the embed and row
       interaction.reply({ embeds: [embed], components: [row] });
     } else {
+      // Token provided
+
       const token = interaction.options.get("token").value;
       let response;
 
@@ -63,6 +71,7 @@ module.exports = {
           Authorization: `Token ${token}`,
         };
 
+        // Make request to ListenBrainz
         response = await axios.get(BASE_URL, {
           headers: AUTH_HEADER,
         });
@@ -70,16 +79,21 @@ module.exports = {
         console.log("Error: " + error);
       }
 
+      // Check if token is valid
       if (response.data.valid) {
+        // Token is valid
         // Save token to DB
         try {
           const user = await userData.findOne({ userID: interaction.user.id });
+          // Check if user is already in DB
           if (user) {
+            // Update token if user is already in DB
             await userData.findOneAndUpdate(
               { userID: interaction.user.id },
               { ListenBrainzToken: token }
             );
           } else {
+            // Create new user if user is not in DB
             await userData.create({
               userID: interaction.user.id,
               ListenBrainzToken: token,
@@ -95,6 +109,13 @@ module.exports = {
             `✅ You have been logged in to .fmbot with the username [${response.data.user_name}](https://listenbrainz.org/user/${response.data.user_name}/)!`
           )
           .setColor("32cd32");
+        interaction.reply({ embeds: [embed], ephemeral: true });
+      } else {
+        // Token is not valid
+        // Send error
+        const embed = new EmbedBuilder()
+          .setDescription("❌ Invalid token. Please try again.")
+          .setColor("ba0000");
         interaction.reply({ embeds: [embed], ephemeral: true });
       }
     }
