@@ -11,15 +11,6 @@ module.exports = {
   // deleted: Boolean,
 
   callback: async (client, interaction) => {
-    // Create an embed with the current track
-    const embed = new EmbedBuilder({
-      author: {
-        name: `Now playing - ${interaction.user.displayName}`,
-        iconURL: interaction.user.displayAvatarURL(),
-      },
-      color: "ba0000",
-    });
-
     // Get ListenBrainz username from the database
     const brainzUsername = (
       await userData.findOne(
@@ -52,12 +43,55 @@ module.exports = {
       console.log("Error: " + error);
     }
 
-    // // Add track info to embed
-    // embed
-    //   .setTitle(response.data.track.title)
-    //   .setURL(response.data.track.url)
-    //   .setThumbnail(response.data.track.thumb);
+    // Check if no track is playing
+    if (!response.data.track) {
+      // Get most recent listen from ListenBrainz API instead
+      try {
+        BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
+        AUTH_HEADER = {
+          Authorization: `Token ${listenBrainzToken}`,
+        };
 
-    console.log(response.data.payload.listens);
+        // Make request to ListenBrainz
+        listensresponse = await axios.get(BASE_URL, {
+          headers: AUTH_HEADER,
+        });
+
+        // Create an embed with the most recent listen
+        const embed = new EmbedBuilder({
+          author: {
+            name: `Last track for ${interaction.user.displayName}`,
+            iconURL: interaction.user.displayAvatarURL(),
+          },
+          color: 0xba0000,
+          description: `**${listensresponse.data.payload.listens[0].track_metadata.track_name}** - ${listensresponse.data.payload.listens[0].track_metadata.artist_name}`,
+        });
+
+        // Send embed
+        interaction.reply({ embeds: [embed] });
+
+        // console.log(listensresponse.data.payload.listens);
+      } catch (error) {
+        console.log("Error: " + error);
+      }
+    } else {
+      // Create an embed with the current track
+      const embed = new EmbedBuilder({
+        author: {
+          name: `Now playing - ${interaction.user.displayName}`,
+          iconURL: interaction.user.displayAvatarURL(),
+        },
+        color: 0xba0000,
+      });
+      // Add track info to embed
+      embed.setDescription(
+        `**${response.data.payload.listens[0].track_metadata.track_name}** - ${response.data.payload.listens[0].track_metadata.artist_name}`
+      );
+
+      // Send embed
+      interaction.reply({ embeds: [embed] });
+
+      console.log(response.data.payload.listens[0].track_metadata.track_name);
+    }
   },
 };
