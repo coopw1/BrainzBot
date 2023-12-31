@@ -32,7 +32,7 @@ module.exports = {
     // Check if user has provided a token
     if (!interaction.options.get("token")) {
       // No token provided
-      // Send an embed with instructions
+      // Create an embed with instructions
       const embed = new EmbedBuilder()
         .setDescription(
           "**[Click here to get your ListenBrainz User token](https://listenbrainz.org/profile/)**\n" +
@@ -136,13 +136,17 @@ module.exports = {
                     // Update token if user is already in DB
                     await userData.findOneAndUpdate(
                       { userID: i.user.id },
-                      { ListenBrainzToken: token }
+                      {
+                        ListenBrainzToken: token,
+                        ListenBrainzUsername: response.data.user_name,
+                      }
                     );
                   } else {
                     // Create new user if user is not in DB
                     await userData.create({
                       userID: i.user.id,
                       ListenBrainzToken: token,
+                      ListenBrainzUsername: response.data.user_name,
                     });
                   }
                 } catch (error) {
@@ -201,13 +205,17 @@ module.exports = {
             // Update token if user is already in DB
             await userData.findOneAndUpdate(
               { userID: interaction.user.id },
-              { ListenBrainzToken: token }
+              {
+                ListenBrainzToken: token,
+                ListenBrainzUsername: response.data.user_name,
+              }
             );
           } else {
             // Create new user if user is not in DB
             await userData.create({
               userID: interaction.user.id,
               ListenBrainzToken: token,
+              ListenBrainzUsername: response.data.user_name,
             });
           }
         } catch (error) {
