@@ -3,7 +3,7 @@ const axios = require("axios").default;
 
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
-const getMostRecentlyPlayed = require("./util/getMostRecentlyPlayed");
+const getMostRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getMBID = require("./util/getMBID");
 const getAlbumCover = require("./util/getAlbumCover");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
