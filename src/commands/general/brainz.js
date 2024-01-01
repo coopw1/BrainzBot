@@ -69,8 +69,6 @@ module.exports = {
 
         // Send embed
         interaction.reply({ embeds: [embed] });
-
-        // console.log(listensresponse.data.payload.listens);
       } catch (error) {
         console.log("Error: " + error);
       }
