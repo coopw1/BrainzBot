@@ -43,8 +43,15 @@ module.exports = {
       console.log("Error: " + error);
     }
 
+    // Create base embed
+    const embed = new EmbedBuilder({
+      author: {
+        iconURL: interaction.user.displayAvatarURL(),
+      },
+      color: 0xba0000,
+    });
     // Check if no track is playing
-    if (!response.data.track) {
+    if (!response.data.payload.count) {
       // Get most recent listen from ListenBrainz API instead
       try {
         BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
@@ -57,39 +64,49 @@ module.exports = {
           headers: AUTH_HEADER,
         });
 
-        // Create an embed with the most recent listen
-        const embed = new EmbedBuilder({
-          author: {
-            name: `Last track for ${interaction.user.displayName}`,
-            iconURL: interaction.user.displayAvatarURL(),
-          },
-          color: 0xba0000,
-          description: `**${listensresponse.data.payload.listens[0].track_metadata.track_name}** - ${listensresponse.data.payload.listens[0].track_metadata.artist_name}`,
-        });
-
-        // Send embed
-        interaction.reply({ embeds: [embed] });
+        // Add last track info to embed
+        embed
+          .setDescription(
+            `**${listensresponse.data.payload.listens[0].track_metadata.track_name}** - ${listensresponse.data.payload.listens[0].track_metadata.artist_name}`
+          )
+          .setAuthor({
+            name: `Last track for ${brainzUsername}`,
+          });
       } catch (error) {
         console.log("Error: " + error);
       }
     } else {
-      // Create an embed with the current track
-      const embed = new EmbedBuilder({
-        author: {
-          name: `Now playing - ${interaction.user.displayName}`,
-          iconURL: interaction.user.displayAvatarURL(),
-        },
-        color: 0xba0000,
-      });
       // Add track info to embed
-      embed.setDescription(
-        `**${response.data.payload.listens[0].track_metadata.track_name}** - ${response.data.payload.listens[0].track_metadata.artist_name}`
-      );
-
-      // Send embed
-      interaction.reply({ embeds: [embed] });
-
-      console.log(response.data.payload.listens[0].track_metadata.track_name);
+      embed
+        .setDescription(
+          `**${response.data.payload.listens[0].track_metadata.track_name}** - ${response.data.payload.listens[0].track_metadata.artist_name}`
+        )
+        .setAuthor({
+          name: `Now playing - ${brainzUsername}`,
+        });
     }
+
+    // Get total scrobbles
+    try {
+      BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listen-count`;
+      AUTH_HEADER = {
+        Authorization: `Token ${listenBrainzToken}`,
+      };
+
+      // Make request to ListenBrainz
+      response = await axios.get(BASE_URL, {
+        headers: AUTH_HEADER,
+      });
+
+      // Add total scrobbles to embed
+      embed.setFooter({
+        text: `${response.data.payload.count} total scrobbles`,
+      });
+    } catch (error) {
+      console.log("Error: " + error);
+    }
+
+    // Send embed
+    interaction.reply({ embeds: [embed] });
   },
 };
