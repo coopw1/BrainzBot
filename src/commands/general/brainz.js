@@ -4,6 +4,7 @@ const axios = require("axios").default;
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getMostRecentlyPlayed = require("./util/getMostRecentlyPlayed");
+const getMBID = require("./util/getMBID");
 
 module.exports = {
   name: "brainz",
@@ -14,7 +15,9 @@ module.exports = {
   // deleted: Boolean,
 
   callback: async (client, interaction) => {
-    // Get
+    await interaction.deferReply();
+
+    // Get user data from database
     const currentUserData = await userData.findOne({
       userID: interaction.user.id,
     });
@@ -31,8 +34,8 @@ module.exports = {
 
     const brainzUsername = currentUserData.ListenBrainzUsername;
     const listenBrainzToken = currentUserData.ListenBrainzToken;
+    let MBID;
 
-    let response;
     // Get currently playing track from ListenBrainz API
     currentlyPlaying = await getCurrentlyPlaying(
       listenBrainzToken,
@@ -41,20 +44,27 @@ module.exports = {
 
     // Create base embed
     const embed = new EmbedBuilder({
-      author: {
-        iconURL: interaction.user.displayAvatarURL(),
-      },
       color: 0xba0000,
     });
     // Check if a track is playing
     if (currentlyPlaying.count) {
       // Track is playing
+      // Get MBID
+      MBID = await getMBID(
+        currentlyPlaying.listens[0].track_metadata.artist_name,
+        currentlyPlaying.listens[0].track_metadata.release_name,
+        currentlyPlaying.listens[0].track_metadata.track_name
+      );
+
       // Add track info to embed
       embed
+        .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
+        .setURL(`https://musicbrainz.org/recording/${MBID}`)
         .setDescription(
-          `**${currentlyPlaying.listens[0].track_metadata.track_name}** - ${currentlyPlaying.listens[0].track_metadata.artist_name}`
+          `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - ${currentlyPlaying.listens[0].track_metadata.release_name}`
         )
         .setAuthor({
+          iconURL: interaction.user.displayAvatarURL(),
           name: `Now playing - ${brainzUsername}`,
         });
     } else {
@@ -71,6 +81,7 @@ module.exports = {
           `**${mostRecentlyPlayer.listens[0].track_metadata.track_name}** - ${mostRecentlyPlayer.listens[0].track_metadata.artist_name}`
         )
         .setAuthor({
+          iconURL: interaction.user.displayAvatarURL(),
           name: `Last track for ${brainzUsername}`,
         });
     }
@@ -95,7 +106,12 @@ module.exports = {
       console.log("Error: " + error);
     }
 
+    // Add thumbnail
+    embed.setThumbnail(
+      "https://ia601506.us.archive.org/25/items/mbid-34bcb239-ae92-409a-82a0-2aa74a591ec5/mbid-34bcb239-ae92-409a-82a0-2aa74a591ec5-35224645978.png"
+    );
+
     // Send embed
-    interaction.reply({ embeds: [embed] });
+    interaction.editReply({ embeds: [embed] });
   },
 };
