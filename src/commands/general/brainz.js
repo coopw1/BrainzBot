@@ -1,11 +1,13 @@
 const { EmbedBuilder } = require("discord.js");
 const axios = require("axios").default;
+const moment = require("moment");
 
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getMostRecentlyPlayed = require("./util/getMostRecentlyPlayed");
 const getMBID = require("./util/getMBID");
 const getAlbumCover = require("./util/getAlbumCover");
+const getTotalScrobbles = require("./util/getTotalScrobbles");
 
 module.exports = {
   name: "brainz",
@@ -38,7 +40,7 @@ module.exports = {
     let MBID;
 
     // Get currently playing track from ListenBrainz API
-    currentlyPlaying = await getCurrentlyPlaying(
+    const currentlyPlaying = await getCurrentlyPlaying(
       listenBrainzToken,
       brainzUsername
     );
@@ -62,7 +64,7 @@ module.exports = {
         .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
         .setURL(`https://musicbrainz.org/recording/${MBID}`)
         .setDescription(
-          `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - ${currentlyPlaying.listens[0].track_metadata.release_name}`
+          `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata.release_name}*`
         )
         .setAuthor({
           iconURL: interaction.user.displayAvatarURL(),
@@ -71,7 +73,7 @@ module.exports = {
     } else {
       // Track is not playing
       // Get most recent listen from ListenBrainz API instead
-      mostRecentlyPlayed = await getMostRecentlyPlayed(
+      const mostRecentlyPlayed = await getMostRecentlyPlayed(
         listenBrainzToken,
         brainzUsername
       );
@@ -86,37 +88,28 @@ module.exports = {
         .setTitle(`${mostRecentlyPlayed.listens[0].track_metadata.track_name}`)
         .setURL(`https://musicbrainz.org/recording/${MBID}`)
         .setDescription(
-          `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - ${mostRecentlyPlayed.listens[0].track_metadata.release_name}`
+          `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata.release_name}*`
         )
         .setAuthor({
           iconURL: interaction.user.displayAvatarURL(),
           name: `Last track for ${brainzUsername}`,
         });
+
+      // Get time of last scrobble
+      const lastScrobble = new Date(mostRecentlyPlayed.latest_listen_ts * 1000);
+      // Add time of last scrobble to embed
+      embed.setTimestamp(lastScrobble);
     }
 
     // Get total scrobbles
-    try {
-      BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listen-count`;
-      AUTH_HEADER = {
-        Authorization: `Token ${listenBrainzToken}`,
-      };
-
-      // Make request to ListenBrainz
-      response = await axios.get(BASE_URL, {
-        headers: AUTH_HEADER,
-      });
-
-      // Add total scrobbles to embed
-      embed.setFooter({
-        text: `${response.data.payload.count} total scrobbles`,
-      });
-    } catch (error) {
-      console.log("Error: " + error);
-    }
+    totalScrobbles = await getTotalScrobbles(listenBrainzToken, brainzUsername);
+    // Add total scrobbles to embed
+    embed.setFooter({
+      text: `${totalScrobbles} total scrobbles\n` + `Last scrobble `,
+    });
 
     // Get thumbnail from MBID
     albumCover = await getAlbumCover(MBID);
-
     // Add thumbnail
     embed.setThumbnail(albumCover);
 
