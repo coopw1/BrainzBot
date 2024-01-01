@@ -3,6 +3,7 @@ const axios = require("axios").default;
 
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
+const getMostRecentlyPlayed = require("./util/getMostRecentlyPlayed");
 
 module.exports = {
   name: "brainz",
@@ -43,32 +44,9 @@ module.exports = {
       },
       color: 0xba0000,
     });
-    // Check if no track is playing
-    if (!currentlyPlaying.count) {
-      // Get most recent listen from ListenBrainz API instead
-      try {
-        BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
-        AUTH_HEADER = {
-          Authorization: `Token ${listenBrainzToken}`,
-        };
-
-        // Make request to ListenBrainz
-        listensresponse = await axios.get(BASE_URL, {
-          headers: AUTH_HEADER,
-        });
-
-        // Add last track info to embed
-        embed
-          .setDescription(
-            `**${listensresponse.data.payload.listens[0].track_metadata.track_name}** - ${listensresponse.data.payload.listens[0].track_metadata.artist_name}`
-          )
-          .setAuthor({
-            name: `Last track for ${brainzUsername}`,
-          });
-      } catch (error) {
-        console.log("Error: " + error);
-      }
-    } else {
+    // Check if a track is playing
+    if (currentlyPlaying.count) {
+      // Track is playing
       // Add track info to embed
       embed
         .setDescription(
@@ -76,6 +54,22 @@ module.exports = {
         )
         .setAuthor({
           name: `Now playing - ${brainzUsername}`,
+        });
+    } else {
+      // Track is not playing
+      // Get most recent listen from ListenBrainz API instead
+      mostRecentlyPlayer = await getMostRecentlyPlayed(
+        listenBrainzToken,
+        brainzUsername
+      );
+
+      // Add last track info to embed
+      embed
+        .setDescription(
+          `**${mostRecentlyPlayer.listens[0].track_metadata.track_name}** - ${mostRecentlyPlayer.listens[0].track_metadata.artist_name}`
+        )
+        .setAuthor({
+          name: `Last track for ${brainzUsername}`,
         });
     }
 
