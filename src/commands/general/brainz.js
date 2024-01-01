@@ -45,7 +45,7 @@ module.exports = {
 
     // Create base embed
     const embed = new EmbedBuilder({
-      color: 0xba0000,
+      color: 0x353070,
     });
     // Check if a track is playing
     if (currentlyPlaying.count) {
