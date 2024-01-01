@@ -1,6 +1,8 @@
 const { EmbedBuilder } = require("discord.js");
-const userData = require("../../../schemas/userData");
 const axios = require("axios").default;
+
+const userData = require("../../../schemas/userData");
+const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 
 module.exports = {
   name: "brainz",
@@ -28,20 +30,11 @@ module.exports = {
     ).ListenBrainzToken;
 
     let response;
-    // Get current track from ListenBrainz API
-    try {
-      BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/playing-now`;
-      AUTH_HEADER = {
-        Authorization: `Token ${listenBrainzToken}`,
-      };
-
-      // Make request to ListenBrainz
-      response = await axios.get(BASE_URL, {
-        headers: AUTH_HEADER,
-      });
-    } catch (error) {
-      console.log("Error: " + error);
-    }
+    // Get currently playing track from ListenBrainz API
+    currentlyPlaying = await getCurrentlyPlaying(
+      listenBrainzToken,
+      brainzUsername
+    );
 
     // Create base embed
     const embed = new EmbedBuilder({
@@ -51,7 +44,7 @@ module.exports = {
       color: 0xba0000,
     });
     // Check if no track is playing
-    if (!response.data.payload.count) {
+    if (!currentlyPlaying.count) {
       // Get most recent listen from ListenBrainz API instead
       try {
         BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
@@ -79,7 +72,7 @@ module.exports = {
       // Add track info to embed
       embed
         .setDescription(
-          `**${response.data.payload.listens[0].track_metadata.track_name}** - ${response.data.payload.listens[0].track_metadata.artist_name}`
+          `**${currentlyPlaying.listens[0].track_metadata.track_name}** - ${currentlyPlaying.listens[0].track_metadata.artist_name}`
         )
         .setAuthor({
           name: `Now playing - ${brainzUsername}`,
