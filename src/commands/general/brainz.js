@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
 const axios = require("axios").default;
-const moment = require("moment");
 
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
