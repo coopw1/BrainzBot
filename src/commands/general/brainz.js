@@ -14,21 +14,23 @@ module.exports = {
   // deleted: Boolean,
 
   callback: async (client, interaction) => {
-    // Get ListenBrainz username from the database
-    const brainzUsername = (
-      await userData.findOne(
-        { userID: interaction.user.id },
-        "ListenBrainzUsername"
-      )
-    ).ListenBrainzUsername;
+    // Get
+    const currentUserData = await userData.findOne({
+      userID: interaction.user.id,
+    });
 
-    // Get ListenBrainz token from the database
-    const listenBrainzToken = (
-      await userData.findOne(
-        { userID: interaction.user.id },
-        "ListenBrainzToken"
-      )
-    ).ListenBrainzToken;
+    if (currentUserData === null) {
+      const embed = new EmbedBuilder()
+        .setDescription(
+          "❌ You have not linked your ListenBrainz account yet!\n" +
+            "Use the </login:1190736297770352801> command to link your ListenBrainz account."
+        )
+        .setColor("ba0000");
+      interaction.reply({ embeds: [embed], ephemeral: true });
+    }
+
+    const brainzUsername = currentUserData.ListenBrainzUsername;
+    const listenBrainzToken = currentUserData.ListenBrainzToken;
 
     let response;
     // Get currently playing track from ListenBrainz API
