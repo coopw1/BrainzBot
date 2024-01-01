@@ -5,6 +5,7 @@ const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getMostRecentlyPlayed = require("./util/getMostRecentlyPlayed");
 const getMBID = require("./util/getMBID");
+const getAlbumCover = require("./util/getAlbumCover");
 
 module.exports = {
   name: "brainz",
@@ -70,15 +71,22 @@ module.exports = {
     } else {
       // Track is not playing
       // Get most recent listen from ListenBrainz API instead
-      mostRecentlyPlayer = await getMostRecentlyPlayed(
+      mostRecentlyPlayed = await getMostRecentlyPlayed(
         listenBrainzToken,
         brainzUsername
       );
 
-      // Add last track info to embed
+      // Get MBID
+      MBID =
+        mostRecentlyPlayed.listens[0].track_metadata.mbid_mapping
+          .recording_mbid;
+
+      // Add track info to embed
       embed
+        .setTitle(`${mostRecentlyPlayed.listens[0].track_metadata.track_name}`)
+        .setURL(`https://musicbrainz.org/recording/${MBID}`)
         .setDescription(
-          `**${mostRecentlyPlayer.listens[0].track_metadata.track_name}** - ${mostRecentlyPlayer.listens[0].track_metadata.artist_name}`
+          `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - ${mostRecentlyPlayed.listens[0].track_metadata.release_name}`
         )
         .setAuthor({
           iconURL: interaction.user.displayAvatarURL(),
@@ -106,10 +114,11 @@ module.exports = {
       console.log("Error: " + error);
     }
 
+    // Get thumbnail from MBID
+    albumCover = await getAlbumCover(MBID);
+
     // Add thumbnail
-    embed.setThumbnail(
-      "https://ia601506.us.archive.org/25/items/mbid-34bcb239-ae92-409a-82a0-2aa74a591ec5/mbid-34bcb239-ae92-409a-82a0-2aa74a591ec5-35224645978.png"
-    );
+    embed.setThumbnail(albumCover);
 
     // Send embed
     interaction.editReply({ embeds: [embed] });
