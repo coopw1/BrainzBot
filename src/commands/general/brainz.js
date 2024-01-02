@@ -78,9 +78,11 @@ module.exports = {
       );
 
       // Get MBID
-      MBID =
-        mostRecentlyPlayed.listens[0].track_metadata.mbid_mapping
-          .recording_mbid;
+      MBID = await getMBID(
+        mostRecentlyPlayed.listens[0].track_metadata.artist_name,
+        mostRecentlyPlayed.listens[0].track_metadata.release_name,
+        mostRecentlyPlayed.listens[0].track_metadata.track_name
+      );
 
       // Add track info to embed
       embed
