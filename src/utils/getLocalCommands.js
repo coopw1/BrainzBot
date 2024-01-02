@@ -10,11 +10,14 @@ module.exports = (exceptions = []) => {
   );
 
   for (const comamndCategory of commandCategories) {
-    if ((commandCategory = "util")) break;
-
     const commandFiles = getAllFiles(comamndCategory);
 
     for (const commandFile of commandFiles) {
+      // Check if the parent directory of the command file is "util"
+      if (path.basename(path.dirname(commandFile)) === "util") {
+        continue;
+      }
+
       const commandObject = require(commandFile);
 
       if (exceptions.includes(commandObject.name)) {
