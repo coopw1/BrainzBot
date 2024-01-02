@@ -78,7 +78,7 @@ module.exports = {
       );
 
       // Get MBID
-      MBID =
+      const MBID =
         mostRecentlyPlayed.listens[0].track_metadata?.mbid_mapping
           ?.recording_mbid;
 
