@@ -1,11 +1,4 @@
-const {
-  EmbedBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ActionRowBuilder,
-  ComponentType,
-  time,
-} = require("discord.js");
+const { EmbedBuilder, time } = require("discord.js");
 
 const userData = require("../../../schemas/userData");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
