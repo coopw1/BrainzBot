@@ -3,7 +3,7 @@ const axios = require("axios").default;
 
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
-const getMostRecentlyPlayed = require("./util/getRecentlyPlayed");
+const getRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getMBID = require("./util/getMBID");
 const getAlbumCover = require("./util/getAlbumCover");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
@@ -54,7 +54,7 @@ module.exports = {
       // Get MBID
       MBID = await getMBID(
         currentlyPlaying.listens[0].track_metadata.artist_name,
-        currentlyPlaying.listens[0].track_metadata.release_name,
+        currentlyPlaying.listens[0].track_metadata?.release_name,
         currentlyPlaying.listens[0].track_metadata.track_name
       );
 
@@ -63,7 +63,7 @@ module.exports = {
         .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
         .setURL(`https://musicbrainz.org/recording/${MBID}`)
         .setDescription(
-          `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata.release_name}*`
+          `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
         )
         .setAuthor({
           iconURL: interaction.user.displayAvatarURL(),
@@ -72,24 +72,22 @@ module.exports = {
     } else {
       // Track is not playing
       // Get most recent listen from ListenBrainz API instead
-      const mostRecentlyPlayed = await getMostRecentlyPlayed(
+      const mostRecentlyPlayed = await getRecentlyPlayed(
         listenBrainzToken,
         brainzUsername
       );
 
       // Get MBID
-      MBID = await getMBID(
-        mostRecentlyPlayed.listens[0].track_metadata.artist_name,
-        mostRecentlyPlayed.listens[0].track_metadata.release_name,
-        mostRecentlyPlayed.listens[0].track_metadata.track_name
-      );
+      MBID =
+        mostRecentlyPlayed.listens[0].track_metadata?.mbid_mapping
+          ?.recording_mbid;
 
       // Add track info to embed
       embed
         .setTitle(`${mostRecentlyPlayed.listens[0].track_metadata.track_name}`)
         .setURL(`https://musicbrainz.org/recording/${MBID}`)
         .setDescription(
-          `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata.release_name}*`
+          `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
         )
         .setAuthor({
           iconURL: interaction.user.displayAvatarURL(),
