@@ -10,6 +10,8 @@ module.exports = (exceptions = []) => {
   );
 
   for (const comamndCategory of commandCategories) {
+    if ((commandCategory = "util")) break;
+
     const commandFiles = getAllFiles(comamndCategory);
 
     for (const commandFile of commandFiles) {
