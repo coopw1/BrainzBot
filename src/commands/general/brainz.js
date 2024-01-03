@@ -105,10 +105,12 @@ module.exports = {
       text: `${totalScrobbles} total scrobbles\n` + `Last scrobble `,
     });
 
-    // Get thumbnail from MBID
-    albumCover = await getAlbumCover(MBID);
-    // Add thumbnail
-    embed.setThumbnail(albumCover);
+    if (!(MBID === undefined)) {
+      // Get thumbnail from MBID
+      albumCover = await getAlbumCover(MBID);
+      // Add thumbnail
+      embed.setThumbnail(albumCover);
+    }
 
     // Send embed
     interaction.editReply({ embeds: [embed] });
