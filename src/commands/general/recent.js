@@ -30,7 +30,6 @@ module.exports = {
     const brainzUsername = currentUserData.ListenBrainzUsername;
     const listenBrainzToken = currentUserData.ListenBrainzToken;
 
-    let currentPage = 0;
     let descriptions = ["", "", "", "", ""];
 
     // Get recently played tracks from ListenBrainz API
@@ -61,16 +60,30 @@ module.exports = {
       // Add the data to their corresponding embed
       if (MBID === undefined) {
         // No MBID
-        descriptions[Math.floor(index / 5)] =
-          descriptions[Math.floor(index / 5)] +
-          `__**${trackName}**__  by **${artistName}**\n` +
-          `${time(timestamp, "t")} • *${releaseName}*\n\n`;
+        if (listen.track_metadata.additional_info.origin_url === undefined) {
+          descriptions[Math.floor(index / 5)] =
+            descriptions[Math.floor(index / 5)] +
+            `__**${trackName}**__  by **${artistName}**\n` +
+            `${time(timestamp, "t")} • *${releaseName}*\n\n`;
+        } else {
+          descriptions[Math.floor(index / 5)] =
+            descriptions[Math.floor(index / 5)] +
+            `**[${trackName}](${listen.track_metadata.additional_info.origin_url})** by **${artistName}**\n` +
+            `${time(timestamp, "t")} • *${releaseName}*\n\n`;
+        }
       } else {
         // Has MBID
-        descriptions[Math.floor(index / 5)] =
-          descriptions[Math.floor(index / 5)] +
-          `**[${trackName}](https://musicbrainz.org/recording/${MBID}/)**  by **${artistName}**\n` +
-          `${time(timestamp, "t")} • *${releaseName}*\n\n`;
+        if (listen.track_metadata.additional_info.origin_url === undefined) {
+          descriptions[Math.floor(index / 5)] =
+            descriptions[Math.floor(index / 5)] +
+            `**${trackName}** by **${artistName}** [(MB)](https://musicbrainz.org/recording/${MBID}/)\n` +
+            `${time(timestamp, "t")} • *${releaseName}*\n\n`;
+        } else {
+          descriptions[Math.floor(index / 5)] =
+            descriptions[Math.floor(index / 5)] +
+            `**[${trackName}](${listen.track_metadata.additional_info.origin_url})** by **${artistName}** [(MB)](https://musicbrainz.org/recording/${MBID}/)\n` +
+            `${time(timestamp, "t")} • *${releaseName}*\n\n`;
+        }
       }
     });
 
