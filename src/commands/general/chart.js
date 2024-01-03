@@ -120,21 +120,23 @@ module.exports = {
     const dimension = interaction.options.get("dimension")?.value || 3;
 
     // Create base embed
-    const embed = new EmbedBuilder();
+    const embed = new EmbedBuilder({
+      color: 0x353070,
+    });
     if (timeperiod === "all_time") {
-      embed
-        .setTitle(
-          `${dimension}x${dimension} All Time chart for ${brainzUsername}`
-        )
-        .setColor(0x353070);
+      embed.setTitle(
+        `${dimension}x${dimension} All Time chart for ${brainzUsername}`
+      );
+    } else if (timeperiod === "half_yearly") {
+      embed.setTitle(
+        `${dimension}x${dimension} Half Yearly chart for ${brainzUsername}`
+      );
     } else {
-      embed
-        .setTitle(
-          `${dimension}x${dimension} ${
-            timeperiod[0].toUpperCase() + timeperiod.substring(1)
-          }ly chart for ${brainzUsername}`
-        )
-        .setColor(0x353070);
+      embed.setTitle(
+        `${dimension}x${dimension} ${
+          timeperiod[0].toUpperCase() + timeperiod.substring(1)
+        }ly chart for ${brainzUsername}`
+      );
     }
 
     // Send back image of chart
