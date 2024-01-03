@@ -29,6 +29,7 @@ module.exports = {
         )
         .setColor("ba0000");
       interaction.reply({ embeds: [embed], ephemeral: true });
+      return;
     }
 
     const brainzUsername = currentUserData.ListenBrainzUsername;
