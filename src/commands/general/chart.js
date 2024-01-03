@@ -3,9 +3,7 @@ const {
   AttachmentBuilder,
 } = require("discord.js");
 const axios = require("axios").default;
-
-const { createCanvas, Image } = require("@napi-rs/canvas");
-const { readFile } = require("fs/promises");
+const canvas = require("@napi-rs/canvas");
 
 const userData = require("../../../schemas/userData");
 
@@ -70,6 +68,7 @@ module.exports = {
   ],
   // deleted: Boolean,
   callback: async (client, interaction) => {
+    await interaction.deferReply();
     // Get user data from database
     const currentUserData = await userData.findOne({
       userID: interaction.user.id,
@@ -91,25 +90,51 @@ module.exports = {
     const timeperiod = interaction.options.get("timeperiod").value;
     const dimension = interaction.options.get("dimension").value;
 
-    // // Send back image of chart
-    // const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timeperiod}/${dimension}/0/512`;
+    // Send back image of chart
+    const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timeperiod}/${dimension}/0/1024`;
 
-    // // Get SVG data
-    // let svgData = (await axios.get(imageURL, { responseType: "text" })).data;
+    // Get SVG data
+    let svgData = (await axios.get(imageURL, { responseType: "text" })).data;
+    const buffer = await svgData;
 
-    // const regex = /xlink:href="(.*?)"/g;
-    // const matches = [...svgData.matchAll(regex)];
+    const regex = /xlink:href="(.*?)"/g;
+    const matches = [...buffer.matchAll(regex)];
 
-    // const imageLinks = matches.map((match) => match[1]);
+    const imageLinks = matches.map((match) => match[1]);
 
-    const canvas = createCanvas(512, 512);
-    const context = canvas.getContext("2d");
+    const myCanvas = canvas.createCanvas(1024, 1024);
+    const context = myCanvas.getContext("2d");
 
-    const background = await readFile("./src/commands/general/util/aaa.jpg");
-    const backgroundImage = new Image();
-    backgroundImage.src = background;
-    context.drawImage(background, 0, 0, 512, 512);
+    let counter = 0;
+    imageLinks.forEach(async (imageLink, index) => {
+      const response = await axios.get(imageLink, {
+        responseType: "arraybuffer",
+      });
 
-    interaction.reply({ files: [attachment] });
+      const image = await canvas.loadImage(response.data);
+
+      const position = [];
+      position[0] = index % dimension;
+      position[1] = Math.floor(index / dimension);
+
+      context.drawImage(
+        image,
+        (position[0] * 1024) / dimension,
+        (position[1] * 1024) / dimension,
+        1024 / dimension,
+        1024 / dimension
+      );
+
+      counter++;
+      if (counter === imageLinks.length) {
+        const attachment = new AttachmentBuilder(await myCanvas.encode("png"), {
+          name: "chart.png",
+        });
+        interaction.editReply({
+          content: "Here's your chart!",
+          files: [attachment],
+        });
+      }
+    });
   },
 };
