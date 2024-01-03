@@ -15,7 +15,7 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
     const currentlyPlaying = await response.data.payload;
     return currentlyPlaying;
   } catch (error) {
-    console.log("Error: " + error);
+    console.log("getCurrentlyPlaying Error: " + error);
     return "error";
   }
 };

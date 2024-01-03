@@ -24,7 +24,7 @@ module.exports = async (
     MBID = await response.data.recordings[0].id;
     return MBID;
   } catch (error) {
-    console.log("Error: " + error);
+    console.log("getMBID Error: " + error);
     return "error";
   }
 };

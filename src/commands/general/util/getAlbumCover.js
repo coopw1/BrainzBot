@@ -15,7 +15,7 @@ module.exports = async (MBID) => {
     const releaseMBID = await response.data.recordings[0]?.releases[0].id;
     return `https://coverartarchive.org/release/${releaseMBID}/front`;
   } catch (error) {
-    console.log("Error: " + error);
+    console.log("getAlbumCover Error: " + error);
     return "error";
   }
 };

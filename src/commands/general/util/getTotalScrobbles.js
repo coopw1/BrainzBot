@@ -15,6 +15,6 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
     const totalScrobbles = await response.data.payload.count;
     return totalScrobbles;
   } catch (error) {
-    console.log("Error: " + error);
+    console.log("getTotalScrobbles Error: " + error);
   }
 };
