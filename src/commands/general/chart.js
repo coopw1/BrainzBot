@@ -16,10 +16,16 @@ module.exports = {
 
   options: [
     {
+      name: "user",
+      description: "user",
+      type: ApplicationCommandOptionType.User,
+      required: false,
+    },
+    {
       name: "timeperiod",
       description: "Time period",
       type: ApplicationCommandOptionType.String,
-      required: true,
+      required: false,
       choices: [
         {
           name: "Week",
@@ -47,7 +53,7 @@ module.exports = {
       name: "dimension",
       description: "Dimension",
       type: ApplicationCommandOptionType.Integer,
-      required: true,
+      required: false,
       choices: [
         {
           name: "2x2",
@@ -71,26 +77,47 @@ module.exports = {
   // deleted: Boolean,
   callback: async (client, interaction) => {
     await interaction.deferReply();
-    // Get user data from database
-    const currentUserData = await userData.findOne({
-      userID: interaction.user.id,
-    });
 
-    if (currentUserData === null) {
-      const embed = new EmbedBuilder()
-        .setDescription(
-          "❌ You have not linked your ListenBrainz account yet!\n" +
-            "Use the </login:1190736297770352801> command to link your ListenBrainz account."
-        )
-        .setColor("ba0000");
-      interaction.reply({ embeds: [embed], ephemeral: true });
+    // Get user data from database
+    let currentUserData;
+    if (
+      interaction.options.get("user") &&
+      !(interaction.options.get("user").value === interaction.user.id)
+    ) {
+      currentUserData = await userData.findOne({
+        userID: interaction.options.get("user").value,
+      });
+      if (currentUserData === null) {
+        const embed = new EmbedBuilder()
+          .setDescription(
+            "❌ This user has not linked their ListenBrainz account yet!\n" +
+              "Use the </login:1190736297770352801> command to link your ListenBrainz account."
+          )
+          .setColor("ba0000");
+        interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+      }
+    } else {
+      currentUserData = await userData.findOne({
+        userID: interaction.user.id,
+      });
+      if (currentUserData === null) {
+        const embed = new EmbedBuilder()
+          .setDescription(
+            "❌ You have not linked your ListenBrainz account yet!\n" +
+              "Use the </login:1190736297770352801> command to link your ListenBrainz account."
+          )
+          .setColor("ba0000");
+        interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+      }
     }
 
     const brainzUsername = currentUserData.ListenBrainzUsername;
     const listenBrainzToken = currentUserData.ListenBrainzToken;
 
-    const timeperiod = interaction.options.get("timeperiod").value;
-    const dimension = interaction.options.get("dimension").value;
+    const timeperiod = interaction.options.get("timeperiod")?.value || "week";
+    const dimension = interaction.options.get("dimension")?.value || 3;
 
     // Create base embed
     const embed = new EmbedBuilder();
