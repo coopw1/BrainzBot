@@ -10,8 +10,8 @@ const userData = require("../../../schemas/userData");
 module.exports = {
   name: "chart",
   description: "Display scrobbles in a nice and neat chart!",
-  // devOnly: Boolean,
-  // testOnly: Boolean,
+  category: "General",
+
   options: [
     {
       name: "timeperiod",

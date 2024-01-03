@@ -11,10 +11,7 @@ const getTotalScrobbles = require("./util/getTotalScrobbles");
 module.exports = {
   name: "brainz",
   description: "Now Playing - Shows your currently playing track!",
-  // devOnly: Boolean,
-  // testOnly: Boolean,
-  // options: Object[],
-  // deleted: Boolean,
+  category: "General",
 
   callback: async (client, interaction) => {
     await interaction.deferReply();

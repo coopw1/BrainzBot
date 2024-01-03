@@ -8,10 +8,7 @@ const pagination = require("../util/pagination");
 module.exports = {
   name: "recent",
   description: "Get your recent listens",
-  // devOnly: Boolean,
-  // testOnly: Boolean,
-  // options: Object[],
-  // deleted: Boolean,
+  category: "General",
 
   callback: async (client, interaction) => {
     // Get user data from database

@@ -27,6 +27,7 @@ module.exports = {
       maxLength: 36,
     },
   ],
+  category: "Settings",
 
   callback: async (client, interaction) => {
     // Check if user has provided a token
