@@ -1,6 +1,8 @@
 const {
   ApplicationCommandOptionType,
   AttachmentBuilder,
+  EmbedBuilder,
+  time,
 } = require("discord.js");
 const axios = require("axios").default;
 const canvas = require("@napi-rs/canvas");
@@ -28,7 +30,7 @@ module.exports = {
           value: "month",
         },
         {
-          name: "Half Year",
+          name: "Half-year",
           value: "half_yearly",
         },
         {
@@ -90,6 +92,24 @@ module.exports = {
     const timeperiod = interaction.options.get("timeperiod").value;
     const dimension = interaction.options.get("dimension").value;
 
+    // Create base embed
+    const embed = new EmbedBuilder();
+    if (timeperiod === "all_time") {
+      embed
+        .setTitle(
+          `${dimension}x${dimension} All Time chart for ${brainzUsername}`
+        )
+        .setColor(0x353070);
+    } else {
+      embed
+        .setTitle(
+          `${dimension}x${dimension} ${
+            timeperiod[0].toUpperCase() + timeperiod.substring(1)
+          }ly chart for ${brainzUsername}`
+        )
+        .setColor(0x353070);
+    }
+
     // Send back image of chart
     const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timeperiod}/${dimension}/0/1024`;
 
@@ -131,7 +151,7 @@ module.exports = {
           name: "chart.png",
         });
         interaction.editReply({
-          content: "Here's your chart!",
+          embeds: [embed],
           files: [attachment],
         });
       }
