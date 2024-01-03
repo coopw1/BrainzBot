@@ -6,13 +6,12 @@ module.exports = async (
   trackName,
   listenBrainzToken
 ) => {
-  let response;
   try {
-    BASE_URL = "http://musicbrainz.org/ws/2/recording/";
-    AUTH_HEADER = {
+    const BASE_URL = "http://musicbrainz.org/ws/2/recording/";
+    const AUTH_HEADER = {
       Authorization: `Token ${listenBrainzToken}`,
     };
-    PARAMS = {
+    const PARAMS = {
       params: {
         query: `artist:${artistName} release:${releaseName}  recording:${trackName}`,
         headers: AUTH_HEADER,
@@ -20,12 +19,12 @@ module.exports = async (
     };
 
     // Make request to MusicBrainz
-    response = await axios.get(BASE_URL, PARAMS);
+    const response = await axios.get(BASE_URL, PARAMS);
+
+    MBID = await response.data.recordings[0].id;
+    return MBID;
   } catch (error) {
     console.log("Error: " + error);
+    return "error";
   }
-
-  MBID = response.data.recordings[0].id;
-
-  return MBID;
 };
