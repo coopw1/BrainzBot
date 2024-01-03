@@ -12,7 +12,7 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
       headers: AUTH_HEADER,
     });
 
-    const totalScrobbles = await response.data.payload;
+    const totalScrobbles = await response.data.payload.count;
     return totalScrobbles;
   } catch (error) {
     console.log("Error: " + error);
