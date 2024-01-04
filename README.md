@@ -1,7 +1,7 @@
 # BrainzBot
 <div align="center">
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue)](#license)
+![License](https://img.shields.io/badge/License-Apache_2.0-blue)](#license)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/coopw1/BrainzBot)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/coopw1/BrainzBot)
 
