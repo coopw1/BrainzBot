@@ -39,7 +39,7 @@ module.exports = {
           "**[Click here to get your ListenBrainz User token](https://listenbrainz.org/profile/)**\n\n" +
             "Once you have copied your token, press the button below"
         )
-        .setColor("ba0000");
+        .setColor(0x353070);
 
       // Create a button with the label "Continue"
       const continueButton = new ButtonBuilder({
@@ -165,7 +165,7 @@ module.exports = {
                 // Send error
                 const embed = new EmbedBuilder()
                   .setDescription("❌ Invalid token. Please try again.")
-                  .setColor("ba0000");
+                  .setColor(0xf44336);
                 i.reply({ embeds: [embed], ephemeral: true });
               }
             })
@@ -182,7 +182,9 @@ module.exports = {
                 "And Sign in to ListenBrainz [here](https://listenbrainz.org/login/).\n" +
                 "After that, you can [get your ListenBrainz User token](https://listenbrainz.org/profile/)."
             )
-            .setColor("00ffff");
+            .setColor(0xeb743b);
+          // Send embed
+          i.reply({ embeds: [embed], ephemeral: true });
         }
       });
     } else {
