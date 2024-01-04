@@ -150,8 +150,8 @@ module.exports = {
     topStatistics = await getTopStatistics(
       listenBrainzToken,
       brainzUsername,
-      "artists",
-      "all_time"
+      searchType,
+      interaction.options.get("timeperiod")?.value || "week"
     );
 
     // Check if there are no recently played tracks
