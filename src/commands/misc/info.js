@@ -28,7 +28,6 @@ module.exports = {
     }
 
     // Get ListenBrainz API ping
-    let LBPing;
     const BASE_URL = "https://api.listenbrainz.org/1/stats/sitewide/artists";
     const instance = axios.create();
 
@@ -45,14 +44,16 @@ module.exports = {
       return response;
     });
 
-    instance
-      .get(BASE_URL)
-      .then((response) => {
-        LBPing = response.headers["request-duration"];
-      })
-      .catch((error) => {
+    async function fetchData() {
+      try {
+        const response = await instance.get(BASE_URL);
+        return response.headers["request-duration"];
+      } catch (error) {
         console.error(`Error: ${error}`);
-      });
+      }
+    }
+
+    const LBPing = await fetchData();
 
     const embed = new EmbedBuilder({
       author: {
