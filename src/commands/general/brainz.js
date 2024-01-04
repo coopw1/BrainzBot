@@ -28,7 +28,7 @@ module.exports = {
             "Use the </login:1190736297770352801> command to link your ListenBrainz account."
         )
         .setColor("ba0000");
-      interaction.reply({ embeds: [embed], ephemeral: true });
+      interaction.editReply({ embeds: [embed], ephemeral: true });
       return;
     }
 
