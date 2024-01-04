@@ -46,125 +46,125 @@ module.exports = {
         },
       ],
     },
-    {
-      name: "artist",
-      description: "Search for a artist",
-      type: ApplicationCommandOptionType.Subcommand,
-      options: [
-        {
-          name: "artist",
-          description: "(part of) the artist's name",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-        },
-        {
-          name: "country",
-          description: "the 2-letter country code for the artist",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-          minLength: 2,
-          maxLength: 2,
-        },
-        {
-          name: "alive",
-          description: "whether the artist is alive",
-          type: ApplicationCommandOptionType.Boolean,
-          required: false,
-        },
-        {
-          name: "gender",
-          description: "the artist's gender",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-          choices: [
-            {
-              name: "Male",
-              value: "male",
-            },
-            {
-              name: "Female",
-              value: "female",
-            },
-            {
-              name: "Other",
-              value: "other",
-            },
-            {
-              name: "Not Applicable",
-              value: "not applicable",
-            },
-          ],
-        },
-        {
-          name: "type",
-          description: "the artist's type (“person”, “group”, etc.)",
-          type: ApplicationCommandOptionType.String,
-          choices: [
-            {
-              name: "Person",
-              value: "person",
-            },
-            {
-              name: "Group",
-              value: "group",
-            },
-            {
-              name: "Choir",
-              value: "choir",
-            },
-            {
-              name: "Character",
-              value: "character",
-            },
-            {
-              name: "Other",
-              value: "other",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: "album",
-      description: "Search for an album",
-      type: ApplicationCommandOptionType.Subcommand,
-      options: [
-        {
-          name: "release",
-          description: "the name of the album",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-        },
-        {
-          name: "artist",
-          description: "(part of) the combined credited artist's name",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-        },
-        {
-          name: "country",
-          description: "the 2-letter code country for the release",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-          minLength: 2,
-          maxLength: 2,
-        },
-        {
-          name: "lang",
-          description: "the 3-letter language code for the release",
-          type: ApplicationCommandOptionType.String,
-          required: false,
-          minLength: 3,
-          maxLength: 3,
-        },
-        {
-          name: "tracks",
-          description: "the total number of tracks on the release",
-          type: ApplicationCommandOptionType.Integer,
-          required: false,
-        },
-      ],
-    },
+    // {
+    //   name: "artist",
+    //   description: "Search for a artist",
+    //   type: ApplicationCommandOptionType.Subcommand,
+    //   options: [
+    //     {
+    //       name: "artist",
+    //       description: "(part of) the artist's name",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //     },
+    //     {
+    //       name: "country",
+    //       description: "the 2-letter country code for the artist",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //       minLength: 2,
+    //       maxLength: 2,
+    //     },
+    //     {
+    //       name: "alive",
+    //       description: "whether the artist is alive",
+    //       type: ApplicationCommandOptionType.Boolean,
+    //       required: false,
+    //     },
+    //     {
+    //       name: "gender",
+    //       description: "the artist's gender",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //       choices: [
+    //         {
+    //           name: "Male",
+    //           value: "male",
+    //         },
+    //         {
+    //           name: "Female",
+    //           value: "female",
+    //         },
+    //         {
+    //           name: "Other",
+    //           value: "other",
+    //         },
+    //         {
+    //           name: "Not Applicable",
+    //           value: "not applicable",
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       name: "type",
+    //       description: "the artist's type (“person”, “group”, etc.)",
+    //       type: ApplicationCommandOptionType.String,
+    //       choices: [
+    //         {
+    //           name: "Person",
+    //           value: "person",
+    //         },
+    //         {
+    //           name: "Group",
+    //           value: "group",
+    //         },
+    //         {
+    //           name: "Choir",
+    //           value: "choir",
+    //         },
+    //         {
+    //           name: "Character",
+    //           value: "character",
+    //         },
+    //         {
+    //           name: "Other",
+    //           value: "other",
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // },
+    // {
+    //   name: "album",
+    //   description: "Search for an album",
+    //   type: ApplicationCommandOptionType.Subcommand,
+    //   options: [
+    //     {
+    //       name: "release",
+    //       description: "the name of the album",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //     },
+    //     {
+    //       name: "artist",
+    //       description: "(part of) the combined credited artist's name",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //     },
+    //     {
+    //       name: "country",
+    //       description: "the 2-letter code country for the release",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //       minLength: 2,
+    //       maxLength: 2,
+    //     },
+    //     {
+    //       name: "lang",
+    //       description: "the 3-letter language code for the release",
+    //       type: ApplicationCommandOptionType.String,
+    //       required: false,
+    //       minLength: 3,
+    //       maxLength: 3,
+    //     },
+    //     {
+    //       name: "tracks",
+    //       description: "the total number of tracks on the release",
+    //       type: ApplicationCommandOptionType.Integer,
+    //       required: false,
+    //     },
+    //   ],
+    // },
   ],
 
   callback: async (client, interaction) => {
