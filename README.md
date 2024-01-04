@@ -22,3 +22,6 @@ This bot was created mostly as a way for me to get motivation and grow more cons
    ```
    npm run start
    ```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
