@@ -5,7 +5,13 @@ const {
   ComponentType,
 } = require("discord.js");
 
-module.exports = async (interaction, embeds, maxPages, footer = "") => {
+module.exports = async (
+  interaction,
+  embeds,
+  maxPages,
+  footer = "",
+  defered = false
+) => {
   let currentPage = 0;
   // Create left and right buttons
   const leftButton = new ButtonBuilder({
@@ -25,15 +31,27 @@ module.exports = async (interaction, embeds, maxPages, footer = "") => {
     components: [leftButton, rightButton],
   });
 
+  let message;
   // Send embed
-  const message = await interaction.reply({
-    embeds: [
-      embeds[currentPage].setFooter({
-        text: `Page ${currentPage + 1}/${maxPages}${footer}`,
-      }),
-    ],
-    components: [row],
-  });
+  if (defered) {
+    message = await interaction.editReply({
+      embeds: [
+        embeds[currentPage].setFooter({
+          text: `Page ${currentPage + 1}/${maxPages}${footer}`,
+        }),
+      ],
+      components: [row],
+    });
+  } else {
+    message = await interaction.reply({
+      embeds: [
+        embeds[currentPage].setFooter({
+          text: `Page ${currentPage + 1}/${maxPages}${footer}`,
+        }),
+      ],
+      components: [row],
+    });
+  }
 
   // Create a collector that waits for the user to click the button
   const buttonCollectorFilter = (i) => {
