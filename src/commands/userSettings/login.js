@@ -36,13 +36,7 @@ module.exports = {
       // Create an embed with instructions
       const embed = new EmbedBuilder()
         .setDescription(
-          "**[Click here to get your ListenBrainz User token](https://listenbrainz.org/profile/)**\n" +
-            "\n" +
-            "To make a ListenBrainz account, you must sign up through MusicBrainz.\n" +
-            "You can create a MusicBrainz account [here](https://musicbrainz.org/register),\n" +
-            "And Sign in to ListenBrainz [here](https://listenbrainz.org/login/).\n" +
-            "After that, you can [get your ListenBrainz User token](https://listenbrainz.org/profile/).\n" +
-            "\n" +
+          "**[Click here to get your ListenBrainz User token](https://listenbrainz.org/profile/)**\n\n" +
             "Once you have copied your token, press the button below"
         )
         .setColor("ba0000");
@@ -53,10 +47,15 @@ module.exports = {
         label: "Continue",
         style: ButtonStyle.Primary,
       });
+      const questionmarkButton = new ButtonBuilder({
+        customId: "questionmark",
+        label: "?",
+        style: ButtonStyle.Secondary,
+      });
 
       // Create a row with the button
       const row = new ActionRowBuilder({
-        components: [continueButton],
+        components: [continueButton, questionmarkButton],
       });
 
       // Send the embed and row
@@ -173,6 +172,17 @@ module.exports = {
             .catch((error) =>
               console.log("No modal submit interaction was collected")
             );
+        } else if (i.customId === "questionmark") {
+          // User clicked questionmark
+          const embed = new EmbedBuilder()
+            .setTitle("Creating an account")
+            .setDescription(
+              "To make a ListenBrainz account, you must sign up through MusicBrainz.\n" +
+                "You can create a MusicBrainz account [here](https://musicbrainz.org/register),\n" +
+                "And Sign in to ListenBrainz [here](https://listenbrainz.org/login/).\n" +
+                "After that, you can [get your ListenBrainz User token](https://listenbrainz.org/profile/)."
+            )
+            .setColor("00ffff");
         }
       });
     } else {
