@@ -14,8 +14,6 @@ module.exports = {
   category: "General",
 
   callback: async (client, interaction) => {
-    await interaction.deferReply();
-
     // Get user data from database
     const currentUserData = await userData.findOne({
       userID: interaction.user.id,
@@ -28,9 +26,10 @@ module.exports = {
             "Use the </login:1190736297770352801> command to link your ListenBrainz account."
         )
         .setColor("ba0000");
-      interaction.editReply({ embeds: [embed], ephemeral: true });
+      interaction.reply({ embeds: [embed], ephemeral: true });
       return;
     }
+    await interaction.deferReply();
 
     const brainzUsername = currentUserData.ListenBrainzUsername;
     const listenBrainzToken = currentUserData.ListenBrainzToken;
