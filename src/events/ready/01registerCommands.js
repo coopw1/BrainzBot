@@ -4,14 +4,9 @@ const getApplicationCommands = require("../../utils/getApplicationCommands");
 const getLocalCommands = require("../../utils/getLocalCommands");
 
 module.exports = async (client) => {
-  const localCommands = getLocalCommands();
-
   try {
     const localCommands = getLocalCommands();
-    const applicationCommands = await getApplicationCommands(
-      client,
-      testServer
-    );
+    const applicationCommands = await getApplicationCommands(client);
 
     for (const localCommand of localCommands) {
       const { name, description, options } = localCommand;
