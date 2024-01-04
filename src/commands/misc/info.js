@@ -87,7 +87,7 @@ module.exports = {
           inline: true,
         },
       ],
-      color: 0x3b9dff,
+      color: 0x353070,
     });
 
     // Send embed
