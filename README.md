@@ -8,7 +8,7 @@ This bot was created mostly as a way for me to get motivation and grow more cons
 ## Self-hosting
 
 1. [Download and install node.js](https://nodejs.org/en/download) if you don't already have it.
-2. Clone/download this repo
+2. Clone/download this repo and go into the folder.
     ```
     git clone https://github.com/coopw1/BrainzBot
     ```
