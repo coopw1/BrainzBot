@@ -28,7 +28,7 @@ module.exports = {
     }
 
     // Get ListenBrainz API ping
-    let LBping;
+    let LBPing;
     const BASE_URL = "https://api.listenbrainz.org/1/stats/sitewide/artists";
     const instance = axios.create();
 
@@ -68,13 +68,26 @@ module.exports = {
             "[Invite Bot](https://discord.com/oauth2/authorize?client_id=1191438412159389806&permissions=414464658496&scope=bot)\n",
         },
         {
-          name: "Stats",
-          value: client.guilds.cache.reduce(
-            (acc, guild) => acc + guild.memberCount,
-            0
-          ),
+          name: "Usage",
+          value: `Total Users: ${totalUsers}\nTotal Guilds: ${guildCount}`,
+        },
+        {
+          name: "Library",
+          value: "discord.js",
+          inline: true,
+        },
+        {
+          name: "Uptime",
+          value: uptime,
+          inline: true,
+        },
+        {
+          name: "ListenBrainz API Ping",
+          value: `${LBPing}ms`,
+          inline: true,
         },
       ],
+      color: 0x3b9dff,
     });
 
     // Send embed
