@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-
+const axios = require("axios");
 const userData = require("../../../schemas/userData");
 
 module.exports = {
@@ -18,22 +18,41 @@ module.exports = {
     let hours = Math.floor(totalSeconds / 3600);
     totalSeconds %= 3600;
     let minutes = Math.floor(totalSeconds / 60);
-    let seconds = Math.floor(totalSeconds % 60);
-    let uptime = `${days}d, ${hours}h, ${minutes}m and ${seconds}s`;
-    console.log(uptime);
+    let seconds = (totalSeconds % 60).toPrecision(3);
+    let uptime = `${minutes}m, ${seconds}s`;
+    if (hours > 0) {
+      let uptime = `${hours}h, ${minutes}m, ${seconds}s`;
+    }
+    if (days > 0) {
+      let uptime = `${days}d, ${hours}h, ${minutes}m, ${seconds}s`;
+    }
 
     // Get ListenBrainz API ping
-    // let LBping;
-    // request(
-    //   {
-    //     uri: "https://api.listenbrainz.org/1/latest-import/",
-    //     method: "GET",
-    //     time: true,
-    //   },
-    //   (err, resp) => {
-    //     LBping = resp.timings.end;
-    //   }
-    // );
+    let LBping;
+    const BASE_URL = "https://api.listenbrainz.org/1/stats/sitewide/artists";
+    const instance = axios.create();
+
+    instance.interceptors.request.use((config) => {
+      config.headers["request-startTime"] = process.hrtime();
+      return config;
+    });
+
+    instance.interceptors.response.use((response) => {
+      const start = response.config.headers["request-startTime"];
+      const end = process.hrtime(start);
+      const milliseconds = Math.round(end[0] * 1000 + end[1] / 1000000);
+      response.headers["request-duration"] = milliseconds;
+      return response;
+    });
+
+    instance
+      .get(BASE_URL)
+      .then((response) => {
+        LBPing = response.headers["request-duration"];
+      })
+      .catch((error) => {
+        console.error(`Error: ${error}`);
+      });
 
     const embed = new EmbedBuilder({
       author: {
@@ -50,7 +69,10 @@ module.exports = {
         },
         {
           name: "Stats",
-          value: `**Total Users:** ${totalUsers}\n**Guilds:** ${guildCount}\n**Ping:** ${LBping}ms`,
+          value: client.guilds.cache.reduce(
+            (acc, guild) => acc + guild.memberCount,
+            0
+          ),
         },
       ],
     });
