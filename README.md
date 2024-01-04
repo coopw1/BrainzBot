@@ -1,13 +1,16 @@
-# BrainzBot
 <div align="center">
 
-![License](https://img.shields.io/badge/License-Apache_2.0-blue)](#license)
-![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/coopw1/BrainzBot)
-![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/coopw1/BrainzBot)
+# BrainzBot
 
-</div>
+![GitHub License](https://img.shields.io/github/license/coopw1/BrainzBot?style=for-the-badge&color=blue)
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/coopw1/BrainzBot?style=for-the-badge)
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/coopw1/BrainzBot?style=for-the-badge)
+
 BrainzBot is a .fmbot inspired discord bot for [ListenBrainz](https://listenbrainz.org). You can add it to your server using [this link](https://discord.com/oauth2/authorize?client_id=1191438412159389806&permissions=414464658496&scope=bot)
+
 Have any questions or just want to try out the bot? Join the discord server [here!](https://discord.com/invite/gKdHvFKfCa)
+</div>
+
 
 ## About the bot
 This bot was created mostly as a way for me to get motivation and grow more consistant with learning how to code.
