@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require("discord.js");
-const request = require("request");
 
 const userData = require("../../../schemas/userData");
 
@@ -24,17 +23,17 @@ module.exports = {
     console.log(uptime);
 
     // Get ListenBrainz API ping
-    let LBping;
-    request(
-      {
-        uri: "https://api.listenbrainz.org/1/latest-import/",
-        method: "GET",
-        time: true,
-      },
-      (err, resp) => {
-        LBping = resp.timings.end;
-      }
-    );
+    // let LBping;
+    // request(
+    //   {
+    //     uri: "https://api.listenbrainz.org/1/latest-import/",
+    //     method: "GET",
+    //     time: true,
+    //   },
+    //   (err, resp) => {
+    //     LBping = resp.timings.end;
+    //   }
+    // );
 
     const embed = new EmbedBuilder({
       author: {
