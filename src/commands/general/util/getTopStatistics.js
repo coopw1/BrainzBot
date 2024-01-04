@@ -1,8 +1,13 @@
 const axios = require("axios").default;
 
-async function getTopArtists(listenBrainzToken, brainzUsername, timePeriod) {
+module.exports = async (
+  listenBrainzToken,
+  brainzUsername,
+  searchType,
+  timePeriod
+) => {
   try {
-    const BASE_URL = `http://api.listenbrainz.org/1/stats/user/${brainzUsername}/artists`;
+    const BASE_URL = `http://api.listenbrainz.org/1/stats/user/${brainzUsername}/${searchType}`;
     const AUTH_HEADER = {
       Authorization: `Token ${listenBrainzToken}`,
     };
@@ -10,16 +15,18 @@ async function getTopArtists(listenBrainzToken, brainzUsername, timePeriod) {
       params: {
         headers: AUTH_HEADER,
         range: timePeriod,
+        count: 1000,
       },
+      headers: AUTH_HEADER,
     };
 
     // Make request to ListenBrainz
     const response = await axios.get(BASE_URL, PARAMS);
-    console.log(response.data);
+
+    const topStatistics = response.data.payload;
+    return topStatistics;
   } catch (error) {
     console.log("getTopArtists Error: " + error);
     return "error";
   }
-}
-
-module.exports = { getTopArtists };
+};
