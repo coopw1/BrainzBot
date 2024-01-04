@@ -121,6 +121,11 @@ module.exports = {
       recent21to25Embed,
     ];
 
-    pagination(interaction, embeds, maxPages);
+    pagination(
+      interaction,
+      embeds,
+      maxPages,
+      ` - ${interaction.user.username} has ${totalScrobbles} scrobbles`
+    );
   },
 };

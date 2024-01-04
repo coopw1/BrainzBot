@@ -5,7 +5,8 @@ const {
   ComponentType,
 } = require("discord.js");
 
-module.exports = async (interaction, embeds, maxPages, currentPage = 0) => {
+module.exports = async (interaction, embeds, maxPages, footer = "") => {
+  let currentPage = 0;
   // Create left and right buttons
   const leftButton = new ButtonBuilder({
     customId: "left",
@@ -28,9 +29,7 @@ module.exports = async (interaction, embeds, maxPages, currentPage = 0) => {
   const message = await interaction.reply({
     embeds: [
       embeds[currentPage].setFooter({
-        text: `Page ${currentPage + 1}/${maxPages} - ${
-          interaction.user.username
-        } has ${totalScrobbles} scrobbles`,
+        text: `Page ${currentPage + 1}/${maxPages}${footer}`,
       }),
     ],
     components: [row],
@@ -77,9 +76,7 @@ module.exports = async (interaction, embeds, maxPages, currentPage = 0) => {
       await interaction.editReply({
         embeds: [
           embeds[currentPage].setFooter({
-            text: `Page ${currentPage + 1}/${maxPages} - ${
-              interaction.user.username
-            } has ${totalScrobbles} scrobbles`,
+            text: `Page ${currentPage + 1}/${maxPages}${footer}`,
           }),
         ],
         components: [row],
