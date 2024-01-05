@@ -1,4 +1,5 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+
 const pagination = require("../util/pagination");
 const axios = require("axios").default;
 
@@ -168,7 +169,7 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    interaction.deferReply();
+    await interaction.deferReply();
 
     // Get the subcommand
     const subcommand = interaction.options.getSubcommand();
@@ -277,26 +278,25 @@ module.exports = {
         case "releases":
           break;
         case "recordings":
-          const MBID = item.id;
-          const name = item.title;
-          const artist = item["artist-credit"][0].name;
-          const artistMBID = item["artist-credit"][0].artist.id;
-          const releaseMBID = item.releases[0].id;
+          MBID = item.id;
+          recordingName = item.title;
+          artist = item["artist-credit"][0].name;
+          artistMBID = item["artist-credit"][0].artist.id;
+          releaseMBID = item.releases[0].id;
+          realaseDate = item["first-release-date"] || "Unknown";
 
           //Create embed
           embeds[index] = new EmbedBuilder({
             title: `Search Result ${index + 1}:`,
             color: 0x353070,
-            description: `**[${name}](https://musicbrainz.org/recording/${MBID})** by *[${artist}](https://musicbrainz.org/artist/${artistMBID})*\n\nRelease(s):`,
+            description:
+              `**[${recordingName}](https://musicbrainz.org/recording/${MBID})** by *[${artist}](https://musicbrainz.org/artist/${artistMBID})*\n` +
+              `First released: ${realaseDate}\n\nRelease(s):`,
           }).setThumbnail(
             `https://coverartarchive.org/release/${releaseMBID}/front-250`
           );
 
           item.releases.forEach((release) => {
-            console.log(
-              embeds[index].data.description +
-                `**[${release.title}](https://musicbrainz.org/release/${release.id})**`
-            );
             embeds[index].setDescription(
               embeds[index].data.description +
                 `\n**[${release.title}](https://musicbrainz.org/release/${release.id})**`
@@ -306,6 +306,6 @@ module.exports = {
       }
     });
 
-    pagination(interaction, embeds, maxLength, "", true);
+    pagination(interaction, embeds, maxLength);
   },
 };
