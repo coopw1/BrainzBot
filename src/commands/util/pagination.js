@@ -71,7 +71,14 @@ module.exports = async (interaction, embeds, maxPages, footer = "") => {
         currentPage--;
       }
       // Edit embed to show previous 5 listens
-      await interaction.editReply({ embeds: [embeds[currentPage]] });
+      await interaction.editReply({
+        embeds: [
+          embeds[currentPage].setFooter({
+            text: `Page ${currentPage + 1}/${maxPages}${footer}`,
+          }),
+        ],
+        components: [row],
+      });
     } else if (i.customId === "right") {
       i.deferUpdate();
       // User clicked right
