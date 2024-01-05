@@ -5,13 +5,7 @@ const {
   ComponentType,
 } = require("discord.js");
 
-module.exports = async (
-  interaction,
-  embeds,
-  maxPages,
-  footer = "",
-  defered = false
-) => {
+module.exports = async (interaction, embeds, maxPages, footer = "") => {
   let currentPage = 0;
   // Create left and right buttons
   const leftButton = new ButtonBuilder({
@@ -33,7 +27,7 @@ module.exports = async (
 
   let message;
   // Send embed
-  if (defered) {
+  if (interaction.deferred) {
     message = await interaction.editReply({
       embeds: [
         embeds[currentPage].setFooter({
@@ -42,7 +36,7 @@ module.exports = async (
       ],
       components: [row],
     });
-  } else {
+  } else if (!interaction.deferred) {
     message = await interaction.reply({
       embeds: [
         embeds[currentPage].setFooter({
