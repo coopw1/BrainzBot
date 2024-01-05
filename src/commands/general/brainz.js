@@ -100,6 +100,13 @@ module.exports = {
       color: 0x353070,
     });
 
+    // TODO: Add a love/unlove button at bottom of /brainz
+    //
+    // - If currently playing, check to see if it's been scrobbled yet (check to see if it's most recent listen)
+    // - If it is, then we can use MSID/MBID to post love/unlove
+    // - If it hasn't been scrobbled yet, then don't show any buttons
+    // - At some point in the future, maybe add left/right buttons to look at previous scrobbles
+
     let MBID;
     // Check if a track is playing
     if (currentlyPlaying.count) {
