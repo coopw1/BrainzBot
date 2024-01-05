@@ -47,125 +47,125 @@ module.exports = {
         },
       ],
     },
-    // {
-    //   name: "artist",
-    //   description: "Search for a artist",
-    //   type: ApplicationCommandOptionType.Subcommand,
-    //   options: [
-    //     {
-    //       name: "artist",
-    //       description: "(part of) the artist's name",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //     },
-    //     {
-    //       name: "country",
-    //       description: "the 2-letter country code for the artist",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //       minLength: 2,
-    //       maxLength: 2,
-    //     },
-    //     {
-    //       name: "alive",
-    //       description: "whether the artist is alive",
-    //       type: ApplicationCommandOptionType.Boolean,
-    //       required: false,
-    //     },
-    //     {
-    //       name: "gender",
-    //       description: "the artist's gender",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //       choices: [
-    //         {
-    //           name: "Male",
-    //           value: "male",
-    //         },
-    //         {
-    //           name: "Female",
-    //           value: "female",
-    //         },
-    //         {
-    //           name: "Other",
-    //           value: "other",
-    //         },
-    //         {
-    //           name: "Not Applicable",
-    //           value: "not applicable",
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       name: "type",
-    //       description: "the artist's type (“person”, “group”, etc.)",
-    //       type: ApplicationCommandOptionType.String,
-    //       choices: [
-    //         {
-    //           name: "Person",
-    //           value: "person",
-    //         },
-    //         {
-    //           name: "Group",
-    //           value: "group",
-    //         },
-    //         {
-    //           name: "Choir",
-    //           value: "choir",
-    //         },
-    //         {
-    //           name: "Character",
-    //           value: "character",
-    //         },
-    //         {
-    //           name: "Other",
-    //           value: "other",
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: "album",
-    //   description: "Search for an album",
-    //   type: ApplicationCommandOptionType.Subcommand,
-    //   options: [
-    //     {
-    //       name: "release",
-    //       description: "the name of the album",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //     },
-    //     {
-    //       name: "artist",
-    //       description: "(part of) the combined credited artist's name",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //     },
-    //     {
-    //       name: "country",
-    //       description: "the 2-letter code country for the release",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //       minLength: 2,
-    //       maxLength: 2,
-    //     },
-    //     {
-    //       name: "lang",
-    //       description: "the 3-letter language code for the release",
-    //       type: ApplicationCommandOptionType.String,
-    //       required: false,
-    //       minLength: 3,
-    //       maxLength: 3,
-    //     },
-    //     {
-    //       name: "tracks",
-    //       description: "the total number of tracks on the release",
-    //       type: ApplicationCommandOptionType.Integer,
-    //       required: false,
-    //     },
-    //   ],
-    // },
+    {
+      name: "artist",
+      description: "Search for a artist",
+      type: ApplicationCommandOptionType.Subcommand,
+      options: [
+        {
+          name: "artist",
+          description: "(part of) the artist's name",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "country",
+          description: "the 2-letter country code for the artist",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+          minLength: 2,
+          maxLength: 2,
+        },
+        {
+          name: "alive",
+          description: "whether the artist is alive",
+          type: ApplicationCommandOptionType.Boolean,
+          required: false,
+        },
+        {
+          name: "gender",
+          description: "the artist's gender",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+          choices: [
+            {
+              name: "Male",
+              value: "male",
+            },
+            {
+              name: "Female",
+              value: "female",
+            },
+            {
+              name: "Other",
+              value: "other",
+            },
+            {
+              name: "Not Applicable",
+              value: "not applicable",
+            },
+          ],
+        },
+        {
+          name: "type",
+          description: "the artist's type (“person”, “group”, etc.)",
+          type: ApplicationCommandOptionType.String,
+          choices: [
+            {
+              name: "Person",
+              value: "person",
+            },
+            {
+              name: "Group",
+              value: "group",
+            },
+            {
+              name: "Choir",
+              value: "choir",
+            },
+            {
+              name: "Character",
+              value: "character",
+            },
+            {
+              name: "Other",
+              value: "other",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "album",
+      description: "Search for an album",
+      type: ApplicationCommandOptionType.Subcommand,
+      options: [
+        {
+          name: "release-group",
+          description: "the name of the album",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "artist",
+          description: "(part of) the combined credited artist's name",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "country",
+          description: "the 2-letter code country for the album",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+          minLength: 2,
+          maxLength: 2,
+        },
+        {
+          name: "lang",
+          description: "the 3-letter language code for the album",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+          minLength: 3,
+          maxLength: 3,
+        },
+        {
+          name: "tracks",
+          description: "the total number of tracks on the album",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+      ],
+    },
   ],
 
   callback: async (client, interaction) => {
@@ -214,8 +214,9 @@ module.exports = {
         break;
 
       case "album":
-        if (interaction.options.getString("release")) {
-          options.release = interaction.options.getString("release");
+        if (interaction.options.getString("release-group")) {
+          options["release-group"] =
+            interaction.options.getString("release-group");
         }
         if (interaction.options.getString("artist")) {
           options.artist = interaction.options.getString("artist");
@@ -236,6 +237,15 @@ module.exports = {
     Object.entries(options).forEach((entry) => {
       query = `${query}${entry[0]}:${entry[1]} `;
     });
+    if (query === "") {
+      const embed = new EmbedBuilder({
+        title: "Search results",
+        description: "You must provide at least one search term.",
+        color: 0x353070,
+      });
+      interaction.editReply({ embeds: [embed] });
+      return;
+    }
 
     let searchType;
     switch (interaction.options.getSubcommand()) {
@@ -243,7 +253,7 @@ module.exports = {
         searchType = "artists";
         break;
       case "album":
-        searchType = "releases";
+        searchType = "release-groups";
         break;
       case "song":
         searchType = "recordings";
@@ -261,7 +271,7 @@ module.exports = {
     const response = await axios.get(BASE_URL, PARAMS);
 
     const items = await response.data[searchType];
-    const maxLength = items.length;
+    let maxLength = items.length;
 
     const baseEmbed = {
       title: "Search results",
@@ -274,8 +284,64 @@ module.exports = {
     items.forEach((item, index) => {
       switch (searchType) {
         case "artists":
+          console.log(item);
+          MBID = item.id;
+          artistName = item?.name || "No name";
+          artistType = item.type || "Unknown";
+          artistArea = item.area?.name || "Unknown";
+          artistDisambiguation = item.disambiguation || "None";
+          artistBegin = item["life-span"].begin || "Unknown";
+          artistEnd = item["life-span"].end || "Present";
+          artistTags = item.tags;
+
+          //Create embed
+          embeds[index] = new EmbedBuilder({
+            title: `Search Result ${index + 1}:`,
+            color: 0x353070,
+            description:
+              `**[${artistName}](https://musicbrainz.org/artist/${MBID})**\n` +
+              `Type: ${artistType}\n` +
+              `Disambiguation: ${artistDisambiguation}\n` +
+              `Begin: ${artistBegin}\n` +
+              `End: ${artistEnd}\n` +
+              `Area: ${artistArea}\n\n`,
+          });
+
+          if (artistTags) {
+            sortedTags = artistTags.sort((a, b) => b.count - a.count);
+            let tagsList = "";
+            sortedTags.forEach((tag, index) => {
+              linkableTag = tag.name.replaceAll(" ", "%20");
+              if (tag.count == 1 && index < 10) {
+                tagsList =
+                  tagsList +
+                  `[${tag.name}](https://musicbrainz.org/tag/${linkableTag}) - ${tag.count} song\n`;
+              } else if (tag.count > 1 && index < 10) {
+                tagsList =
+                  tagsList +
+                  `[${tag.name}](https://musicbrainz.org/tag/${linkableTag}) - ${tag.count} songs\n`;
+              }
+            });
+            if (!(tagsList == "")) {
+              embeds[index].addFields({ name: "Tags:", value: tagsList });
+            }
+          }
+
           break;
-        case "releases":
+        case "release-groups":
+          MBID = item.id;
+          releaseName = item.title;
+          artist = item["artist-credit"][0].artist.name;
+          artistMBID = item["artist-credit"][0].artist.id;
+
+          //Create embed
+          embeds[index] = new EmbedBuilder({
+            title: `Search Result ${index + 1}:`,
+            color: 0x353070,
+            description: `**[${releaseName}](https://musicbrainz.org/release-group/${MBID})** by *[${artist}](https://musicbrainz.org/artist/${artistMBID})*\n`,
+          }).setThumbnail(
+            `https://coverartarchive.org/release-group/${MBID}/front-250`
+          );
           break;
         case "recordings":
           MBID = item.id;
@@ -305,6 +371,14 @@ module.exports = {
           break;
       }
     });
+    if (items.length == 0) {
+      embeds[0] = new EmbedBuilder({
+        title: "Search results",
+        description: "No results found",
+        color: 0x353070,
+      });
+      maxLength = 1;
+    }
 
     pagination(interaction, embeds, maxLength);
   },
