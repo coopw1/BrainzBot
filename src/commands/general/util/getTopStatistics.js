@@ -15,7 +15,7 @@ module.exports = async (
       params: {
         headers: AUTH_HEADER,
         range: timePeriod,
-        count: 1000,
+        count: 100,
       },
       headers: AUTH_HEADER,
     };
