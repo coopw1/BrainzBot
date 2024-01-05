@@ -281,7 +281,6 @@ module.exports = {
         interaction.reply({ embeds: [embed], ephemeral: true });
         return;
       }
-      console.log(topStatistics);
       if (searchType === "release-groups") {
         searchType = "release_groups";
       }
