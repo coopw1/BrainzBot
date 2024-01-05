@@ -21,10 +21,10 @@ module.exports = {
     let seconds = (totalSeconds % 60).toPrecision(3);
     let uptime = `${minutes}m, ${seconds}s`;
     if (hours > 0) {
-      let uptime = `${hours}h, ${minutes}m, ${seconds}s`;
+      uptime = `${hours}h, ${minutes}m, ${seconds}s`;
     }
     if (days > 0) {
-      let uptime = `${days}d, ${hours}h, ${minutes}m, ${seconds}s`;
+      uptime = `${days}d, ${hours}h, ${minutes}m, ${seconds}s`;
     }
 
     // Get ListenBrainz API ping
