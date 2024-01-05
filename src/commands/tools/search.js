@@ -298,7 +298,7 @@ module.exports = {
             title: `Search Result ${index + 1}:`,
             color: 0x353070,
             description:
-              `**[${artistName}](https://musicbrainz.org/artist/${MBID})**\n` +
+              `**[${artistName}](https://listenbrainz.org/artist/${MBID})**\n` +
               `Type: ${artistType}\n` +
               `Disambiguation: ${artistDisambiguation}\n` +
               `Begin: ${artistBegin}\n` +
@@ -337,7 +337,7 @@ module.exports = {
           embeds[index] = new EmbedBuilder({
             title: `Search Result ${index + 1}:`,
             color: 0x353070,
-            description: `**[${releaseName}](https://musicbrainz.org/release-group/${MBID})** by *[${artist}](https://musicbrainz.org/artist/${artistMBID})*\n`,
+            description: `**[${releaseName}](https://listenbrainz.org/release-group/${MBID})** by *[${artist}](https://listenbrainz.org/artist/${artistMBID})*\n`,
           }).setThumbnail(
             `https://coverartarchive.org/release-group/${MBID}/front-250`
           );
@@ -355,7 +355,7 @@ module.exports = {
             title: `Search Result ${index + 1}:`,
             color: 0x353070,
             description:
-              `**[${recordingName}](https://musicbrainz.org/recording/${MBID})** by *[${artist}](https://musicbrainz.org/artist/${artistMBID})*\n` +
+              `**[${recordingName}](https://musicbrainz.org/recording/${MBID})** by *[${artist}](https://listenbrainz.org/artist/${artistMBID})*\n` +
               `First released: ${realaseDate}\n\nRelease(s):`,
           }).setThumbnail(
             `https://coverartarchive.org/release/${releaseMBID}/front-250`

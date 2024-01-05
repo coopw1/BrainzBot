@@ -282,22 +282,25 @@ module.exports = {
         return;
       }
       console.log(topStatistics);
+      let embed;
       if (searchType === "release-groups") {
-        searchType = "release_groups";
+        embed = new EmbedBuilder()
+          .setTitle(`Top Listeners for __${topStatistics.release_group_name}__`)
+          .setURL(
+            `https://listenbrainz.org/album/${topStatistics.release_group_mbid}`
+          )
+          .setDescription(description)
+          .setColor(0x353070);
+      } else {
+        embed = new EmbedBuilder()
+          .setTitle(`Top Listeners for __${topStatistics.artist_name}__`)
+          .setURL(
+            `https://listenbrainz.org/artist/${topStatistics.artist_mbid}`
+          )
+          .setDescription(description)
+          .setColor(0x353070);
       }
-      const embed = new EmbedBuilder()
-        .setTitle(
-          `Top Listeners for __${
-            topStatistics[searchType.slice(0, -1) + "_name"]
-          }__`
-        )
-        .setURL(
-          `https://musicbrainz.org/${searchType.slice(0, -1)}/${
-            topStatistics[searchType.slice(0, -1) + "_mbid"]
-          }`
-        )
-        .setDescription(description)
-        .setColor(0x353070);
+
       interaction.reply({ embeds: [embed], ephemeral: false });
       return;
     }
@@ -333,17 +336,26 @@ module.exports = {
       const amount = item.listen_count;
       const position = index + 1;
 
-      if (MBID === undefined) {
+      if (MBID === null) {
         descriptions[Math.floor(index / 10)] =
           descriptions[Math.floor(index / 10)] +
           `${position}. **${artistName}** - *${amount} plays*\n`;
       } else {
-        descriptions[Math.floor(index / 10)] =
-          descriptions[Math.floor(index / 10)] +
-          `${position}. **[${artistName}](https://musicbrainz.org/${searchType.slice(
-            0,
-            -1
-          )}/${MBID})** - *${amount} plays*\n`;
+        if (searchType === "artists") {
+          descriptions[Math.floor(index / 10)] =
+            descriptions[Math.floor(index / 10)] +
+            `${position}. **[${artistName}](https://listenbrainz.org/${searchType.slice(
+              0,
+              -1
+            )}/${MBID})** - *${amount} plays*\n`;
+        } else {
+          descriptions[Math.floor(index / 10)] =
+            descriptions[Math.floor(index / 10)] +
+            `${position}. **[${artistName}](https://musicbrainz.org/${searchType.slice(
+              0,
+              -1
+            )}/${MBID})** - *${amount} plays*\n`;
+        }
       }
     });
 
