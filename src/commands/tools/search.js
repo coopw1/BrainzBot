@@ -284,7 +284,6 @@ module.exports = {
     items.forEach((item, index) => {
       switch (searchType) {
         case "artists":
-          console.log(item);
           MBID = item.id;
           artistName = item?.name || "No name";
           artistType = item.type || "Unknown";
