@@ -1,5 +1,6 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, ApplicationCommandOptionType } = require("discord.js");
 const axios = require("axios").default;
+require("dotenv").config();
 
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
@@ -7,11 +8,20 @@ const getRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getMBID = require("./util/getMBID");
 const getAlbumCover = require("./util/getAlbumCover");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
+const getSongInfo = require("./util/getSongInfo");
 
 module.exports = {
   name: "brainz",
   description: "Now Playing - Shows your currently playing track!",
   category: "General",
+  options: [
+    {
+      name: "username",
+      description: "A ListenBrainz username",
+      type: ApplicationCommandOptionType.String,
+      required: false,
+    },
+  ],
 
   callback: async (client, interaction) => {
     // Get user data from database
@@ -19,21 +29,65 @@ module.exports = {
       userID: interaction.user.id,
     });
 
-    if (currentUserData === null) {
+    // Check if username is provided through command or DB
+    if (currentUserData === null && !interaction.options.get("username")) {
+      // No username provided
       const embed = new EmbedBuilder()
         .setDescription(
-          "❌ You have not linked your ListenBrainz account yet!\n" +
+          "❌ You must link your ListenBrainz account to use this command without specifying a username!\n" +
             "Use the </login:1190736297770352801> command to link your ListenBrainz account."
         )
         .setColor("ba0000");
       interaction.reply({ embeds: [embed], ephemeral: true });
       return;
+    } else if (interaction.options.get("username")) {
+      // Username provided
+
+      // Make sure that user exists
+      const BASE_URL = `https://api.listenbrainz.org/1/search/users/`;
+      const AUTH_HEADER = {
+        Authorization: `Token ${process.env.LISTENBRAINZ_TOKEN}`,
+      };
+
+      const PARAMS = {
+        params: {
+          search_term: interaction.options.get("username").value,
+        },
+        headers: AUTH_HEADER,
+      };
+
+      const response = await axios.get(BASE_URL, PARAMS);
+
+      const userResponse = response.data.users[0].user_name;
+      if (!(userResponse === interaction.options.get("username").value)) {
+        // User doesn't exist
+        const embed = new EmbedBuilder()
+          .setDescription(
+            `❌ User ${
+              interaction.options.get("username").value
+            } doesn't exist.`
+          )
+          .setColor("ba0000");
+        interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
+      }
+      return;
     }
     await interaction.deferReply();
 
-    const brainzUsername = currentUserData.ListenBrainzUsername;
-    const listenBrainzToken = currentUserData.ListenBrainzToken;
-    let MBID;
+    let brainzUsername;
+    let listenBrainzToken;
+    // Check if username is provided through command
+    if (interaction.options.get("username")) {
+      // Get username from command
+      brainzUsername = interaction.options.get("username").value;
+      // Use coopw-DiscordBrainzBot's token
+      listenBrainzToken = process.env.LISTENBRAINZ_TOKEN;
+    } else {
+      // Get username from DB
+      brainzUsername = currentUserData.ListenBrainzUsername;
+      listenBrainzToken = currentUserData.ListenBrainzToken;
+    }
 
     // Get currently playing track from ListenBrainz API
     const currentlyPlaying = await getCurrentlyPlaying(
@@ -45,27 +99,65 @@ module.exports = {
     const embed = new EmbedBuilder({
       color: 0x353070,
     });
+
+    // TODO: Add a love/unlove button at bottom of /brainz
+    //
+    // - If currently playing, check to see if it's been scrobbled yet (check to see if it's most recent listen)
+    // - If it is, then we can use MSID/MBID to post love/unlove
+    // - If it hasn't been scrobbled yet, then don't show any buttons
+    // - At some point in the future, maybe add left/right buttons to look at previous scrobbles
+
+    let MBID;
     // Check if a track is playing
     if (currentlyPlaying.count) {
       // Track is playing
-      // Get MBID
-      MBID = await getMBID(
-        currentlyPlaying.listens[0].track_metadata.artist_name,
+      // Get Song info
+      const songInfo = await getSongInfo(
+        currentlyPlaying.listens[0].track_metadata?.artist_name,
         currentlyPlaying.listens[0].track_metadata?.release_name,
-        currentlyPlaying.listens[0].track_metadata.track_name
+        currentlyPlaying.listens[0].track_metadata?.track_name
       );
-      console.log(currentlyPlaying.listens[0].track_metadata);
-      // Add track info to embed
-      embed
-        .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
-        .setURL(`https://musicbrainz.org/recording/${MBID}`)
-        .setDescription(
-          `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
-        )
-        .setAuthor({
-          iconURL: interaction.user.displayAvatarURL(),
-          name: `Now playing - ${brainzUsername}`,
-        });
+
+      if (songInfo?.recording_name === undefined) {
+        // Song info is empty
+        // Add track info to embed
+        embed
+          .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
+          .setDescription(
+            `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
+          )
+          .setAuthor({
+            iconURL: interaction.user.displayAvatarURL(),
+            name: `Now playing - ${brainzUsername}`,
+          });
+      } else {
+        // Song info is not empty
+        // Add track info to embed
+        embed
+          .setTitle(`${songInfo.recording_name}`)
+          .setURL(
+            `https://musicbrainz.org/recording/${songInfo.recording_mbid}`
+          )
+          .setDescription(
+            `**[${songInfo.artist_credit_name}](https://listenbrainz.org/artist/${songInfo.artist_mbids[0]})** - *[${songInfo.release_name}](https://musicbrainz.org/release/${songInfo.release_mbid})*`
+          )
+          .setAuthor({
+            iconURL: interaction.user.displayAvatarURL(),
+            name: `Now playing - ${brainzUsername}`,
+          });
+
+        MBID = songInfo.recording_mbid;
+      }
+
+      // Get total scrobbles
+      totalScrobbles = await getTotalScrobbles(
+        listenBrainzToken,
+        brainzUsername
+      );
+      // Add total scrobbles to embed
+      embed.setFooter({
+        text: `${totalScrobbles} total scrobbles`,
+      });
     } else {
       // Track is not playing
       // Get most recent listen from ListenBrainz API instead
@@ -80,29 +172,51 @@ module.exports = {
           ?.recording_mbid;
 
       // Add track info to embed
-      embed
-        .setTitle(`${mostRecentlyPlayed.listens[0].track_metadata.track_name}`)
-        .setURL(`https://musicbrainz.org/recording/${MBID}`)
-        .setDescription(
-          `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
-        )
-        .setAuthor({
-          iconURL: interaction.user.displayAvatarURL(),
-          name: `Last track for ${brainzUsername}`,
-        });
+      if (
+        mostRecentlyPlayed.listens[0].track_metadata?.mbid_mapping
+          ?.recording_mbid
+      ) {
+        embed
+          .setTitle(
+            `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
+          )
+          .setURL(`https://musicbrainz.org/recording/${MBID}`)
+          .setDescription(
+            `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+          )
+          .setAuthor({
+            iconURL: interaction.user.displayAvatarURL(),
+            name: `Last track for ${brainzUsername}`,
+          });
+      } else {
+        embed
+          .setTitle(
+            `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
+          )
+          .setDescription(
+            `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+          )
+          .setAuthor({
+            iconURL: interaction.user.displayAvatarURL(),
+            name: `Last track for ${brainzUsername}`,
+          });
+      }
 
       // Get time of last scrobble
       const lastScrobble = new Date(mostRecentlyPlayed.latest_listen_ts * 1000);
       // Add time of last scrobble to embed
       embed.setTimestamp(lastScrobble);
-    }
 
-    // Get total scrobbles
-    totalScrobbles = await getTotalScrobbles(listenBrainzToken, brainzUsername);
-    // Add total scrobbles to embed
-    embed.setFooter({
-      text: `${totalScrobbles} total scrobbles\n` + `Last scrobble `,
-    });
+      // Get total scrobbles
+      totalScrobbles = await getTotalScrobbles(
+        listenBrainzToken,
+        brainzUsername
+      );
+      // Add total scrobbles to embed
+      embed.setFooter({
+        text: `${totalScrobbles} total scrobbles\n` + `Last scrobble `,
+      });
+    }
 
     if (!(MBID === undefined)) {
       // Get thumbnail from MBID
