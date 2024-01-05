@@ -54,7 +54,7 @@ module.exports = {
         currentlyPlaying.listens[0].track_metadata?.release_name,
         currentlyPlaying.listens[0].track_metadata.track_name
       );
-
+      console.log(currentlyPlaying.listens[0].track_metadata);
       // Add track info to embed
       embed
         .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
