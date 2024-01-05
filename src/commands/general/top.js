@@ -213,50 +213,13 @@ module.exports = {
       };
     }
 
-    //Create embed for each page, 5 listens each
-    let recent1to10Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[0]
-    );
-    let recent11to20Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[1]
-    );
-    let recent21to30Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[2]
-    );
-    let recent31to40Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[3]
-    );
-    let recent41to50Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[4]
-    );
-    let recent51to60Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[5]
-    );
-    let recent61to70Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[6]
-    );
-    let recent71to80Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[7]
-    );
-    let recent81to90Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[8]
-    );
-    let recent91to100Embed = new EmbedBuilder(baseEmbed).setDescription(
-      await descriptions[9]
-    );
+    let embeds = [];
 
-    const embeds = [
-      recent1to10Embed,
-      recent11to20Embed,
-      recent21to30Embed,
-      recent31to40Embed,
-      recent41to50Embed,
-      recent51to60Embed,
-      recent61to70Embed,
-      recent71to80Embed,
-      recent81to90Embed,
-      recent91to100Embed,
-    ];
+    for (let i = 0; i < maxPages; i++) {
+      embeds[i] = new EmbedBuilder(baseEmbed).setDescription(
+        await descriptions[i]
+      );
+    }
 
     pagination(interaction, embeds, maxPages);
   },
