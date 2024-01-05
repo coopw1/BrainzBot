@@ -72,18 +72,21 @@ module.exports = {
       });
 
       // Handle the collector
-      collector.on("collect", async (i) => {
+      collector.on("collect", async (buttoni) => {
         // Check if the button was continue
-        if (i.customId === "continue") {
+        if (buttoni.customId === "continue") {
           // User clicked continue
+
+          // Generate a random customId
+          const randomCustomId = Math.random().toString(36).slice(2);
 
           // Create a modal
           const modal = new ModalBuilder({
             title: "ListenBrainz User Token",
-            customId: "tokenModal",
+            customId: randomCustomId,
           });
 
-          // Create a text input
+          // Create a text input with a random customId
           const tokenInput = new TextInputBuilder({
             customId: "ListenBrainzToken",
             label: "Enter your ListenBrainz User token",
@@ -92,7 +95,6 @@ module.exports = {
             minLength: 36,
             maxLength: 36,
           });
-
           // Create a row with the text input
           const row = new ActionRowBuilder().addComponents(tokenInput);
 
@@ -100,11 +102,14 @@ module.exports = {
           modal.addComponents(row);
 
           // Send the modal
-          await i.showModal(modal);
+          await buttoni.showModal(modal);
 
           // Create a collector that waits for the user to submit the modal
-          const modalCollectorFilter = (i) => i.user.id === i.user.id;
-          i.awaitModalSubmit({ time: 60_000, modalCollectorFilter })
+          const modalCollectorFilter = (modali) =>
+            modali.user.id === buttoni.user.id &&
+            modali.customId === randomCustomId;
+          buttoni
+            .awaitModalSubmit({ time: 60_000, filter: modalCollectorFilter })
             .then(async (i) => {
               // User submitted the modal
 
@@ -172,7 +177,7 @@ module.exports = {
             .catch((error) =>
               console.log("No modal submit interaction was collected")
             );
-        } else if (i.customId === "questionmark") {
+        } else if (buttoni.customId === "questionmark") {
           // User clicked questionmark
           const embed = new EmbedBuilder()
             .setTitle("Creating an account")
@@ -184,7 +189,7 @@ module.exports = {
             )
             .setColor(0xeb743b);
           // Send embed
-          i.reply({ embeds: [embed], ephemeral: true });
+          buttoni.reply({ embeds: [embed], ephemeral: true });
         }
       });
     } else {
