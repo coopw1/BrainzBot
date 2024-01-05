@@ -2,12 +2,103 @@ const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
 const getTopStatistics = require("./util/getTopStatistics");
 const userData = require("../../../schemas/userData");
 const pagination = require("../util/pagination");
+const getMBID = require("./util/getMBID");
 
 module.exports = {
   name: "top",
   description: "Display top scrobbles!",
   category: "General",
+  deleted: false,
   options: [
+    {
+      name: "listeners",
+      description: "Get's the top listeners for the time period",
+      type: ApplicationCommandOptionType.SubcommandGroup,
+      options: [
+        {
+          name: "artists",
+          description: "Show your most listened to artists",
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              name: "artist",
+              description: "Artist name",
+              type: ApplicationCommandOptionType.String,
+              required: true,
+            },
+            {
+              name: "timeperiod",
+              description: "Time period",
+              type: ApplicationCommandOptionType.String,
+              required: false,
+              choices: [
+                {
+                  name: "Week",
+                  value: "week",
+                },
+                {
+                  name: "Month",
+                  value: "month",
+                },
+                {
+                  name: "Half-year",
+                  value: "half_yearly",
+                },
+                {
+                  name: "Year",
+                  value: "year",
+                },
+                {
+                  name: "All Time",
+                  value: "all_time",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "albums",
+          description: "Show your most listened to albums",
+          type: ApplicationCommandOptionType.Subcommand,
+          options: [
+            {
+              name: "album",
+              description: "Album name",
+              type: ApplicationCommandOptionType.String,
+              required: true,
+            },
+            {
+              name: "timeperiod",
+              description: "Time period",
+              type: ApplicationCommandOptionType.String,
+              required: false,
+              choices: [
+                {
+                  name: "Week",
+                  value: "week",
+                },
+                {
+                  name: "Month",
+                  value: "month",
+                },
+                {
+                  name: "Half-year",
+                  value: "half_yearly",
+                },
+                {
+                  name: "Year",
+                  value: "year",
+                },
+                {
+                  name: "All Time",
+                  value: "all_time",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
     {
       name: "artists",
       description: "Show your most listened to artists",
@@ -147,7 +238,71 @@ module.exports = {
 
     const brainzUsername = currentUserData.ListenBrainzUsername;
     const listenBrainzToken = currentUserData.ListenBrainzToken;
-    topStatistics = await getTopStatistics(
+    if (interaction.options.getSubcommandGroup() === "listeners") {
+      if (searchType === "releases") {
+        searchType = "release-groups";
+      }
+      const MBID = await getMBID(
+        interaction.options.get("artist")?.value || "",
+        interaction.options.get("album")?.value || "",
+        "",
+        searchType
+      );
+      const topStatistics = await getTopStatistics(
+        listenBrainzToken,
+        brainzUsername,
+        searchType,
+        interaction.options.get("timeperiod")?.value || "week",
+        true,
+        MBID
+      );
+
+      let description = "";
+      topStatistics.listeners.forEach(async (item, index) => {
+        userName = item.user_name;
+        listenCount = item.listen_count;
+
+        description =
+          description +
+          `${
+            index + 1
+          }. [${userName}](https://listenbrainz.org/user/${userName}/) - *${listenCount} listens*\n`;
+      });
+
+      // Check if there are no listeners
+      if (description === "") {
+        const embed = new EmbedBuilder()
+          .setDescription(
+            `❌ This ${interaction.options
+              .getSubcommand()
+              .slice(0, -1)} has no listeners!`
+          )
+          .setColor("ba0000");
+        interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
+      }
+      console.log(topStatistics);
+      if (searchType === "release-groups") {
+        searchType = "release_groups";
+      }
+      const embed = new EmbedBuilder()
+        .setTitle(
+          `Top Listeners for __${
+            topStatistics[searchType.slice(0, -1) + "_name"]
+          }__`
+        )
+        .setURL(
+          `https://musicbrainz.org/${searchType.slice(0, -1)}/${
+            topStatistics[searchType.slice(0, -1) + "_mbid"]
+          }`
+        )
+        .setDescription(description)
+        .setColor(0x353070);
+      interaction.reply({ embeds: [embed], ephemeral: false });
+      return;
+    }
+
+    const topStatistics = await getTopStatistics(
       listenBrainzToken,
       brainzUsername,
       searchType,
