@@ -69,7 +69,14 @@ module.exports = {
       const collector = message.createMessageComponentCollector({
         ComponentType: ComponentType.Button,
         filter: buttonCollectorFilter,
+        time: 180_000,
       });
+
+      setTimeout(function () {
+        row.components[0].setDisabled(true);
+        row.components[1].setDisabled(true);
+        message.edit({ components: [row] });
+      }, 180_000);
 
       // Handle the collector
       collector.on("collect", async (buttoni) => {

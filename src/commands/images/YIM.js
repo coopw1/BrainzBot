@@ -169,7 +169,7 @@ module.exports = {
         components: [leftButton, rightButton],
       });
 
-      const message = await interaction.editReply({
+      let message = await interaction.editReply({
         files: [attachments[currentPage]],
         embeds: [
           embed.setFooter({
@@ -185,7 +185,14 @@ module.exports = {
       const collector = message.createMessageComponentCollector({
         ComponentType: ComponentType.Button,
         filter: buttonCollectorFilter,
+        time: 1_00_000,
       });
+
+      setTimeout(function () {
+        row.components[0].setDisabled(true);
+        row.components[1].setDisabled(true);
+        message.edit({ components: [row] });
+      }, 600_000);
 
       collector.on("collect", async (i) => {
         // Check if the button was clicked
@@ -201,7 +208,7 @@ module.exports = {
             currentPage--;
           }
           // Edit embed to show previous 5 listens
-          await interaction.editReply({
+          message = await interaction.editReply({
             files: [attachments[currentPage]],
             embeds: [
               embed.setFooter({
@@ -223,7 +230,7 @@ module.exports = {
           }
 
           // Edit embed to show YIM page
-          await interaction.editReply({
+          message = await interaction.editReply({
             files: [attachments[currentPage]],
             embeds: [
               embed.setFooter({
