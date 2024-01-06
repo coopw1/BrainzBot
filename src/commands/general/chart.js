@@ -8,6 +8,7 @@ const axios = require("axios").default;
 const canvas = require("@napi-rs/canvas");
 
 const userData = require("../../../schemas/userData");
+const svgParser = require("../util/svgParser");
 
 module.exports = {
   name: "chart",
@@ -141,48 +142,6 @@ module.exports = {
     // Send back image of chart
     const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timeperiod}/${dimension}/0/1024`;
 
-    // Get SVG data
-    let svgData = (await axios.get(imageURL, { responseType: "text" })).data;
-    const buffer = await svgData;
-
-    const regex = /xlink:href="(.*?)"/g;
-    const matches = [...buffer.matchAll(regex)];
-
-    const imageLinks = matches.map((match) => match[1]);
-
-    const myCanvas = canvas.createCanvas(1024, 1024);
-    const context = myCanvas.getContext("2d");
-
-    let counter = 0;
-    imageLinks.forEach(async (imageLink, index) => {
-      const response = await axios.get(imageLink, {
-        responseType: "arraybuffer",
-      });
-
-      const image = await canvas.loadImage(response.data);
-
-      const position = [];
-      position[0] = index % dimension;
-      position[1] = Math.floor(index / dimension);
-
-      context.drawImage(
-        image,
-        (position[0] * 1024) / dimension,
-        (position[1] * 1024) / dimension,
-        1024 / dimension,
-        1024 / dimension
-      );
-
-      counter++;
-      if (counter === imageLinks.length) {
-        const attachment = new AttachmentBuilder(await myCanvas.encode("png"), {
-          name: "chart.png",
-        });
-        interaction.editReply({
-          embeds: [embed],
-          files: [attachment],
-        });
-      }
-    });
+    svgParser(imageURL, interaction);
   },
 };
