@@ -58,7 +58,7 @@ module.exports = async (interaction, embeds, maxPages, footer = "") => {
 
   // Handle the collector
   collector.on("collect", async (i) => {
-    // Check if the button was continue
+    // Check if the button was clicked
     if (i.customId === "left") {
       i.deferUpdate();
       // User clicked left
