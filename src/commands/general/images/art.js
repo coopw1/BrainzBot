@@ -2,13 +2,13 @@ const {
   AttachmentBuilder,
   ApplicationCommandOptionType,
 } = require("discord.js");
-const userData = require("../../../schemas/userData");
-const convertSvgToPng = require("../util/convertSvgToPng");
+const userData = require("../../../../schemas/userData");
+const convertSvgToPng = require("../../util/convertSvgToPng");
 
 module.exports = {
   name: "art",
   description: "Get art-creator results from ListenBrainz!",
-  category: "General",
+  category: "Images",
   options: [
     {
       name: "designer-top-5",

@@ -7,13 +7,13 @@ const {
 const axios = require("axios").default;
 const canvas = require("@napi-rs/canvas");
 
-const convertSvgToPng = require("../util/convertSvgToPng");
-const userData = require("../../../schemas/userData");
+const convertSvgToPng = require("../../util/convertSvgToPng");
+const userData = require("../../../../schemas/userData");
 
 module.exports = {
   name: "chart",
   description: "Display scrobbles in a nice and neat chart!",
-  category: "General",
+  category: "Images",
 
   options: [
     {
