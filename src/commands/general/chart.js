@@ -127,8 +127,7 @@ module.exports = {
     }
     await interaction.deferReply();
 
-    const brainzUsername = currentUserData.ListenBrainzUsername;
-
+    let brainzUsername;
     // Check if username is provided through command
     if (interaction.options.get("username")) {
       // Get username from command
