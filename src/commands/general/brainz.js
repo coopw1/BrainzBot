@@ -5,7 +5,6 @@ require("dotenv").config();
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
-const getMBID = require("./util/getMBID");
 const getAlbumCover = require("./util/getAlbumCover");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
 const getSongInfo = require("./util/getSongInfo");
@@ -112,9 +111,14 @@ module.exports = {
 
       if (songInfo?.recording_name === undefined) {
         // Song info is empty
+
+        const currentURL =
+          currentlyPlaying.listens[0].track_metadata.additional_info
+            ?.origin_url || "";
         // Add track info to embed
         embed
           .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
+          .setURL(currentURL)
           .setDescription(
             `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
           )
@@ -181,10 +185,15 @@ module.exports = {
             name: `Last track for ${brainzUsername}`,
           });
       } else {
+        const currentURL =
+          mostRecentlyPlayed.listens[0].track_metadata.additional_info
+            ?.origin_url || "";
+
         embed
           .setTitle(
             `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
           )
+          .setURL(currentURL)
           .setDescription(
             `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
           )
