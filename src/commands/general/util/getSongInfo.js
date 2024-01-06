@@ -1,5 +1,14 @@
 const axios = require("axios").default;
 
+/**
+ * Retrieves song metadata from the ListenBrainz API based on the provided artist, release, and track names.
+ *
+ * @param {string} artistName - The name of the artist.
+ * @param {string} releaseName - The name of the release.
+ * @param {string} trackName - The name of the track.
+ * @param {string} listenBrainzToken - The ListenBrainz API token for authentication.
+ * @return {promise<Object>} A promise that resolves to the song metadata retrieved from the ListenBrainz API.
+ */
 module.exports = async (
   artistName,
   releaseName,
@@ -39,6 +48,6 @@ module.exports = async (
     console.log(error.config);
   });
 
-  const songData = await response.data;
+  const songData = response.data;
   return songData;
 };

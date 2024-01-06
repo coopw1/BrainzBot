@@ -1,5 +1,14 @@
 const axios = require("axios").default;
 
+/**
+ * Fetches the MusicBrainz ID of a recording, release, or artist based on the provided parameters.
+ *
+ * @param {string} artistName - The name of the artist to search for. If not provided, all artists will be considered.
+ * @param {string} releaseName - The name of the release to search for. If not provided, all releases will be considered.
+ * @param {string} trackName - The name of the track to search for. If not provided, all tracks will be considered.
+ * @param {string} MBIDType - The type of MBID to fetch. Must be one of "recordings", "releases", or "artists". Defaults to "recordings".
+ * @return {promise<string>} The MusicBrainz ID of the first matching result, or "error" if an error occurred.
+ */
 module.exports = async (
   artistName,
   releaseName,
@@ -25,7 +34,7 @@ module.exports = async (
     // Make request to MusicBrainz
     const response = await axios.get(BASE_URL, PARAMS);
 
-    MBID = await response.data[MBIDType][0].id;
+    MBID = response.data[MBIDType][0].id;
     return MBID;
   } catch (error) {
     console.log("getMBID Error: " + error);

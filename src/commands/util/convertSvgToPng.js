@@ -12,6 +12,12 @@ const preset = presets.node({
   fetch,
 });
 
+/**
+ * Retrieves an SVG image from the specified link and converts it to a PNG image.
+ *
+ * @param {string} link - The link to the SVG image.
+ * @return {promise<Buffer>} - The converted PNG image.
+ */
 module.exports = async (link) => {
   const response = await axios.get(link);
   const svg = response.data;
