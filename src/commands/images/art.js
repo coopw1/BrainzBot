@@ -2,8 +2,8 @@ const {
   AttachmentBuilder,
   ApplicationCommandOptionType,
 } = require("discord.js");
-const userData = require("../../../../schemas/userData");
-const convertSvgToPng = require("../../util/convertSvgToPng");
+const userData = require("../../../schemas/userData");
+const convertSvgToPng = require("../util/convertSvgToPng");
 
 module.exports = {
   name: "art",
@@ -184,6 +184,7 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
+    console.log("hi");
     // Get user data from database
     const currentUserData = await userData.findOne({
       userID: interaction.user.id,
