@@ -184,7 +184,6 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    console.log("hi");
     // Get user data from database
     const currentUserData = await userData.findOne({
       userID: interaction.user.id,
@@ -249,7 +248,6 @@ module.exports = {
     const timeperiod = interaction.options.get("timeperiod")?.value || "week";
 
     let link = `https://api.listenbrainz.org/1/art/${interaction.options.getSubcommand()}/${brainzUsername}/${timeperiod}/750`;
-    console.log(link);
 
     const png = await convertSvgToPng(link);
     const attachment = new AttachmentBuilder(await png, {
