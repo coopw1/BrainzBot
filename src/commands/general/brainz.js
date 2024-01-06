@@ -71,7 +71,6 @@ module.exports = {
         interaction.reply({ embeds: [embed], ephemeral: true });
         return;
       }
-      return;
     }
     await interaction.deferReply();
 
