@@ -331,7 +331,11 @@ module.exports = {
 
     // Get data for each listen
     topStatistics[searchType].forEach(async (item, index) => {
-      const artistName = item[searchType.slice(0, -1).concat("_name")];
+      console.log(searchType.slice(0, -1).concat("_name"));
+      let name = item[searchType.slice(0, -1).concat("_name")];
+      if (searchType === "recordings") {
+        artistName = item.track_name;
+      }
       const MBID = item[searchType.slice(0, -1).concat("_mbid")];
       const amount = item.listen_count;
       const position = index + 1;
