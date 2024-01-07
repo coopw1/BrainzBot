@@ -1,5 +1,16 @@
 const axios = require("axios").default;
 
+/**
+ * Retrieves top statistics from the ListenBrainz API.
+ *
+ * @param {string} listenBrainzToken - The token for authenticating with the ListenBrainz API.
+ * @param {string} brainzUsername - The username for retrieving user-specific statistics.
+ * @param {string} searchType - The type of statistics to retrieve.
+ * @param {string} timePeriod - The time period for which to retrieve statistics.
+ * @param {boolean} [getListeners=false] - Optional parameter to retrieve listeners for a specific MBID.
+ * @param {string} [MBID] - Optional parameter for the MBID of an artist or release.
+ * @return {Promise<Object>} A promise that resolves to the top statistics retrieved from the ListenBrainz API.
+ */
 module.exports = async (
   listenBrainzToken,
   brainzUsername,

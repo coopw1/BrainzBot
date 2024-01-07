@@ -54,11 +54,18 @@ module.exports = async (interaction, embeds, maxPages, footer = "") => {
   const collector = message.createMessageComponentCollector({
     ComponentType: ComponentType.Button,
     filter: buttonCollectorFilter,
+    time: 240_000,
   });
+
+  setTimeout(function () {
+    row.components[0].setDisabled(true);
+    row.components[1].setDisabled(true);
+    message.edit({ components: [row] });
+  }, 240_000);
 
   // Handle the collector
   collector.on("collect", async (i) => {
-    // Check if the button was continue
+    // Check if the button was clicked
     if (i.customId === "left") {
       i.deferUpdate();
       // User clicked left

@@ -5,10 +5,74 @@ require("dotenv").config();
 const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
-const getMBID = require("./util/getMBID");
 const getAlbumCover = require("./util/getAlbumCover");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
 const getSongInfo = require("./util/getSongInfo");
+
+/**
+ * Checks if the currently playing song matches the most recently played song.
+ *
+ * @param {Object} currentlyPlaying - the currently playing song information
+ * @param {string} listenBrainzToken - the token for accessing ListenBrainz API
+ * @param {string} brainzUsername - the username for accessing ListenBrainz API
+ * @return {Promise<Object>} - the most recent song if there is a match, otherwise null
+ */
+async function checkRecentForMatch(
+  currentlyPlaying,
+  listenBrainzToken,
+  brainzUsername
+) {
+  const mostRecentlyPlayed = await getRecentlyPlayed(
+    listenBrainzToken,
+    brainzUsername
+  );
+  const currentlyPlayingSong = currentlyPlaying.listens[0].track_metadata;
+  const mostRecentSong = mostRecentlyPlayed.listens[0].track_metadata;
+
+  if (
+    (currentlyPlayingSong.artist_name.includes(mostRecentSong.artist_name) ||
+      mostRecentSong.artist_name.includes(currentlyPlayingSong.artist_name)) &&
+    (currentlyPlayingSong.track_name.includes(mostRecentSong.track_name) ||
+      mostRecentSong.track_name.includes(currentlyPlayingSong.track_name))
+  ) {
+    return await mostRecentSong;
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Checks if a song is loved by a user on ListenBrainz.
+ *
+ * @param {string} songMBID - The MusicBrainz ID of the song.
+ * @param {string} songMSID - The MessyBrainz ID of the song.
+ * @param {string} listenBrainzToken - The authentication token for ListenBrainz API.
+ * @param {string} brainzUsername - The username of the user on ListenBrainz.
+ * @return {Promise<number>} - The score indicating whether the song is loved or not (-1 if unloved, 0 if no data, 1 if loved).
+ */
+async function checkIfLoved(
+  songMBID = "",
+  songMSID = "",
+  listenBrainzToken,
+  brainzUsername
+) {
+  const BASE_URL = `https://api.listenbrainz.org/1/feedback/user/${brainzUsername}/get-feedback-for-recordings`;
+  const AUTH_HEADER = {
+    Authorization: `Token ${listenBrainzToken}`,
+  };
+  const PARAMS = {
+    params: {
+      recording_mbids: songMBID,
+      recording_msids: songMSID,
+    },
+    headers: AUTH_HEADER,
+  };
+  axios.get(BASE_URL, PARAMS).then((response) => {
+    const score = response.data.feedback[0].score;
+    console.log(score);
+    return score;
+  });
+}
 
 module.exports = {
   name: "brainz",
@@ -56,7 +120,19 @@ module.exports = {
         headers: AUTH_HEADER,
       };
 
-      const response = await axios.get(BASE_URL, PARAMS);
+      const response = await axios.get(BASE_URL, PARAMS).catch((error) => {
+        interaction.reply({
+          embeds: [
+            new EmbedBuilder()
+              .setDescription(
+                `❌ Error: ${error.response.data.message}\n` +
+                  `Please DM @coopw to report this error.`
+              )
+              .setColor("ba0000"),
+          ],
+          ephemeral: true,
+        });
+      });
 
       const userResponse = response.data.users[0].user_name;
       if (!(userResponse === interaction.options.get("username").value)) {
@@ -71,7 +147,6 @@ module.exports = {
         interaction.reply({ embeds: [embed], ephemeral: true });
         return;
       }
-      return;
     }
     await interaction.deferReply();
 
@@ -100,13 +175,6 @@ module.exports = {
       color: 0x353070,
     });
 
-    // TODO: Add a love/unlove button at bottom of /brainz
-    //
-    // - If currently playing, check to see if it's been scrobbled yet (check to see if it's most recent listen)
-    // - If it is, then we can use MSID/MBID to post love/unlove
-    // - If it hasn't been scrobbled yet, then don't show any buttons
-    // - At some point in the future, maybe add left/right buttons to look at previous scrobbles
-
     let MBID;
     // Check if a track is playing
     if (currentlyPlaying.count) {
@@ -120,9 +188,23 @@ module.exports = {
 
       if (songInfo?.recording_name === undefined) {
         // Song info is empty
+
+        // Check if the track has been scrobbled
+        const checkMostRecentSong = await checkRecentForMatch(
+          currentlyPlaying,
+          listenBrainzToken,
+          brainzUsername
+        );
+        if (checkMostRecentSong) {
+          console.log(checkMostRecentSong);
+        }
+        const currentURL =
+          currentlyPlaying.listens[0].track_metadata.additional_info
+            ?.origin_url || "";
         // Add track info to embed
         embed
           .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
+          .setURL(currentURL)
           .setDescription(
             `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
           )
@@ -147,6 +229,9 @@ module.exports = {
           });
 
         MBID = songInfo.recording_mbid;
+
+        // Check if the track has been loved
+        checkIfLoved(MBID, listenBrainzToken, brainzUsername);
       }
 
       // Get total scrobbles
@@ -189,10 +274,15 @@ module.exports = {
             name: `Last track for ${brainzUsername}`,
           });
       } else {
+        const currentURL =
+          mostRecentlyPlayed.listens[0].track_metadata.additional_info
+            ?.origin_url || "";
+
         embed
           .setTitle(
             `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
           )
+          .setURL(currentURL)
           .setDescription(
             `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
           )

@@ -5,20 +5,20 @@ const {
   time,
 } = require("discord.js");
 const axios = require("axios").default;
-const canvas = require("@napi-rs/canvas");
 
+const convertSvgToPng = require("../util/convertSvgToPng");
 const userData = require("../../../schemas/userData");
 
 module.exports = {
   name: "chart",
   description: "Display scrobbles in a nice and neat chart!",
-  category: "General",
+  category: "Images",
 
   options: [
     {
       name: "user",
       description: "user",
-      type: ApplicationCommandOptionType.User,
+      type: ApplicationCommandOptionType.String,
       required: false,
     },
     {
@@ -77,33 +77,47 @@ module.exports = {
   // deleted: Boolean,
   callback: async (client, interaction) => {
     // Get user data from database
-    let currentUserData;
-    if (
-      interaction.options.get("user") &&
-      !(interaction.options.get("user").value === interaction.user.id)
-    ) {
-      currentUserData = await userData.findOne({
-        userID: interaction.options.get("user").value,
-      });
-      if (currentUserData === null) {
+    const currentUserData = await userData.findOne({
+      userID: interaction.user.id,
+    });
+
+    // Check if username is provided through command or DB
+    if (currentUserData === null && !interaction.options.get("username")) {
+      // No username provided
+      const embed = new EmbedBuilder()
+        .setDescription(
+          "❌ You must link your ListenBrainz account to use this command without specifying a username!\n" +
+            "Use the </login:1190736297770352801> command to link your ListenBrainz account."
+        )
+        .setColor("ba0000");
+      interaction.reply({ embeds: [embed], ephemeral: true });
+      return;
+    } else if (interaction.options.get("username")) {
+      // Username provided
+
+      // Make sure that user exists
+      const BASE_URL = `https://api.listenbrainz.org/1/search/users/`;
+      const AUTH_HEADER = {
+        Authorization: `Token ${process.env.LISTENBRAINZ_TOKEN}`,
+      };
+
+      const PARAMS = {
+        params: {
+          search_term: interaction.options.get("username").value,
+        },
+        headers: AUTH_HEADER,
+      };
+
+      const response = await axios.get(BASE_URL, PARAMS);
+
+      const userResponse = response.data.users[0].user_name;
+      if (!(userResponse === interaction.options.get("username").value)) {
+        // User doesn't exist
         const embed = new EmbedBuilder()
           .setDescription(
-            "❌ This user has not linked their ListenBrainz account yet!\n" +
-              "Use the </login:1190736297770352801> command to link your ListenBrainz account."
-          )
-          .setColor("ba0000");
-        interaction.reply({ embeds: [embed], ephemeral: true });
-        return;
-      }
-    } else {
-      currentUserData = await userData.findOne({
-        userID: interaction.user.id,
-      });
-      if (currentUserData === null) {
-        const embed = new EmbedBuilder()
-          .setDescription(
-            "❌ You have not linked your ListenBrainz account yet!\n" +
-              "Use the </login:1190736297770352801> command to link your ListenBrainz account."
+            `❌ User ${
+              interaction.options.get("username").value
+            } doesn't exist.`
           )
           .setColor("ba0000");
         interaction.reply({ embeds: [embed], ephemeral: true });
@@ -112,8 +126,15 @@ module.exports = {
     }
     await interaction.deferReply();
 
-    const brainzUsername = currentUserData.ListenBrainzUsername;
-    const listenBrainzToken = currentUserData.ListenBrainzToken;
+    let brainzUsername;
+    // Check if username is provided through command
+    if (interaction.options.get("username")) {
+      // Get username from command
+      brainzUsername = interaction.options.get("username").value;
+    } else {
+      // Get username from DB
+      brainzUsername = currentUserData.ListenBrainzUsername;
+    }
 
     const timeperiod = interaction.options.get("timeperiod")?.value || "week";
     const dimension = interaction.options.get("dimension")?.value || 3;
@@ -141,48 +162,12 @@ module.exports = {
     // Send back image of chart
     const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timeperiod}/${dimension}/0/1024`;
 
-    // Get SVG data
-    let svgData = (await axios.get(imageURL, { responseType: "text" })).data;
-    const buffer = await svgData;
+    png = await convertSvgToPng(imageURL);
 
-    const regex = /xlink:href="(.*?)"/g;
-    const matches = [...buffer.matchAll(regex)];
-
-    const imageLinks = matches.map((match) => match[1]);
-
-    const myCanvas = canvas.createCanvas(1024, 1024);
-    const context = myCanvas.getContext("2d");
-
-    let counter = 0;
-    imageLinks.forEach(async (imageLink, index) => {
-      const response = await axios.get(imageLink, {
-        responseType: "arraybuffer",
-      });
-
-      const image = await canvas.loadImage(response.data);
-
-      const position = [];
-      position[0] = index % dimension;
-      position[1] = Math.floor(index / dimension);
-
-      context.drawImage(
-        image,
-        (position[0] * 1024) / dimension,
-        (position[1] * 1024) / dimension,
-        1024 / dimension,
-        1024 / dimension
-      );
-
-      counter++;
-      if (counter === imageLinks.length) {
-        const attachment = new AttachmentBuilder(await myCanvas.encode("png"), {
-          name: "chart.png",
-        });
-        interaction.editReply({
-          embeds: [embed],
-          files: [attachment],
-        });
-      }
+    const attachment = new AttachmentBuilder(await png, {
+      name: "chart.png",
     });
+
+    await interaction.editReply({ embeds: [embed], files: [attachment] });
   },
 };
