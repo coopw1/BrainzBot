@@ -331,7 +331,6 @@ module.exports = {
 
     // Get data for each listen
     topStatistics[searchType].forEach(async (item, index) => {
-      console.log(searchType.slice(0, -1).concat("_name"));
       let name = item[searchType.slice(0, -1).concat("_name")];
       if (searchType === "recordings") {
         artistName = item.track_name;
