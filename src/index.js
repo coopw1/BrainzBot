@@ -17,6 +17,10 @@ const client = new Client({
     eventHandler(client);
 
     client.login(process.env.TOKEN);
+
+    process.on("unhandledRejection", (error) => {
+      console.error("Unhandled promise rejection:", error);
+    });
   } catch (error) {
     console.error(error);
   }
