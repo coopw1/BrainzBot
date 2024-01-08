@@ -9,6 +9,7 @@ const {
 } = require("discord.js");
 const userData = require("../../../schemas/userData");
 const convertSvgToPng = require("../util/convertSvgToPng");
+const getAuth = require("../util/getAuth");
 
 module.exports = {
   name: "yim",

@@ -8,6 +8,7 @@ const axios = require("axios").default;
 
 const convertSvgToPng = require("../util/convertSvgToPng");
 const userData = require("../../../schemas/userData");
+const getAuth = require("../util/getAuth");
 
 module.exports = {
   name: "chart",
