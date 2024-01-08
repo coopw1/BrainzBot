@@ -16,7 +16,7 @@ module.exports = async (interaction) => {
   });
 
   // Check if username is provided through command or DB
-  if (currentUserData === null && !interaction.options.get("username")) {
+  if (currentUserData === null && !interaction.options.get("user")) {
     // No username provided
     const embed = new EmbedBuilder()
       .setDescription(
@@ -26,7 +26,7 @@ module.exports = async (interaction) => {
       .setColor("ba0000");
     interaction.reply({ embeds: [embed], ephemeral: true });
     return;
-  } else if (interaction.options.get("username")) {
+  } else if (interaction.options.get("user")) {
     // Username provided
 
     // Make sure that user exists
@@ -37,7 +37,7 @@ module.exports = async (interaction) => {
 
     const PARAMS = {
       params: {
-        search_term: interaction.options.get("username").value,
+        search_term: interaction.options.get("user").value,
       },
       headers: AUTH_HEADER,
     };
@@ -57,11 +57,11 @@ module.exports = async (interaction) => {
     });
 
     const userResponse = response.data.users[0].user_name;
-    if (!(userResponse === interaction.options.get("username").value)) {
+    if (!(userResponse === interaction.options.get("user").value)) {
       // User doesn't exist
       const embed = new EmbedBuilder()
         .setDescription(
-          `❌ User ${interaction.options.get("username").value} doesn't exist.`
+          `❌ User ${interaction.options.get("user").value} doesn't exist.`
         )
         .setColor("ba0000");
       interaction.reply({ embeds: [embed], ephemeral: true });
@@ -73,9 +73,9 @@ module.exports = async (interaction) => {
   let brainzUsername;
   let listenBrainzToken;
   // Check if username is provided through command
-  if (interaction.options.get("username")) {
+  if (interaction.options.get("user")) {
     // Get username from command
-    brainzUsername = interaction.options.get("username").value;
+    brainzUsername = interaction.options.get("user").value;
     // Use coopw-DiscordBrainzBot's token
     listenBrainzToken = process.env.LISTENBRAINZ_TOKEN;
   } else {

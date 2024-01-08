@@ -81,7 +81,7 @@ module.exports = {
   category: "General",
   options: [
     {
-      name: "username",
+      name: "user",
       description: "A ListenBrainz username",
       type: ApplicationCommandOptionType.String,
       required: false,
