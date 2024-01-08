@@ -1,8 +1,16 @@
-const { EmbedBuilder, ApplicationCommandOptionType } = require("discord.js");
+require("dotenv").config();
+
+const {
+  EmbedBuilder,
+  ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+  ComponentType,
+} = require("discord.js");
 const axios = require("axios").default;
 require("dotenv").config();
 
-const userData = require("../../../schemas/userData");
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getAlbumCover = require("./util/getAlbumCover");
@@ -68,10 +76,122 @@ async function checkIfLoved(
     },
     headers: AUTH_HEADER,
   };
-  axios.get(BASE_URL, PARAMS).then((response) => {
-    const score = response.data.feedback[0].score;
-    console.log(score);
-    return score;
+
+  const response = await axios.get(BASE_URL, PARAMS).catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
+  const score = response.data.feedback[0].score;
+  return score;
+}
+
+/**
+ * Generates the love buttons based on the given score.
+ *
+ * @param {number} score - The score to determine the style of the buttons. Possible values are 1, 0, or -1.
+ * @return {ActionRowBuilder} The row containing the love and unlove buttons.
+ */
+function getLoveButtons(score) {
+  let loveButton;
+  let unloveButton;
+
+  switch (score) {
+    case 1:
+      loveButton = new ButtonBuilder({
+        customId: "love",
+        emoji: "❤️",
+        style: ButtonStyle.Success,
+      });
+      unloveButton = new ButtonBuilder({
+        customId: "unlove",
+        emoji: "💔",
+        style: ButtonStyle.Secondary,
+      });
+      break;
+    case 0:
+      loveButton = new ButtonBuilder({
+        customId: "love",
+        emoji: "❤️",
+        style: ButtonStyle.Secondary,
+      });
+      unloveButton = new ButtonBuilder({
+        customId: "unlove",
+        emoji: "💔",
+        style: ButtonStyle.Secondary,
+      });
+      break;
+    case -1:
+      loveButton = new ButtonBuilder({
+        customId: "love",
+        emoji: "❤️",
+        style: ButtonStyle.Secondary,
+      });
+      unloveButton = new ButtonBuilder({
+        customId: "unlove",
+        emoji: "💔",
+        style: ButtonStyle.Success,
+      });
+      break;
+  }
+  const row = new ActionRowBuilder({
+    components: [loveButton, unloveButton],
+  });
+  return row;
+}
+
+/**
+ * Sends feedback for a recording to the ListenBrainz API.
+ *
+ * @param {number} feedback - The feedback score for the recording - 1 for loved, -1 for unloved.
+ * @param {string} listenBrainzToken - The authentication token for accessing the ListenBrainz API.
+ * @param {string} MBID - The MusicBrainz ID of the recording.
+ * @param {string} MSID - The MessyBrainz ID of the recording.
+ */
+async function sendFeedback(feedback, listenBrainzToken, MBID, MSID) {
+  const BASE_URL = `https://api.listenbrainz.org/1/feedback/recording-feedback`;
+  const AUTH_HEADER = {
+    Authorization: `Token ${listenBrainzToken}`,
+  };
+  const PARAMS = {
+    recording_mbid: MBID,
+    recording_msid: MSID,
+    score: feedback,
+  };
+  const HEADERS = {
+    headers: AUTH_HEADER,
+  };
+
+  await axios.post(BASE_URL, PARAMS, HEADERS).catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
   });
 }
 
@@ -89,9 +209,13 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
+    let buttonRow1;
+    let MBID;
+    let MSID;
+    let score;
+
     const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
     if (interaction.replied) {
-      console.log("replied");
       return;
     }
 
@@ -106,7 +230,6 @@ module.exports = {
       color: 0x353070,
     });
 
-    let MBID;
     // Check if a track is playing
     if (currentlyPlaying.count) {
       // Track is playing
@@ -117,18 +240,24 @@ module.exports = {
         currentlyPlaying.listens[0].track_metadata?.track_name
       );
 
-      if (songInfo?.recording_name === undefined) {
+      // Check if songInfo is a correct match
+      const matches =
+        (currentlyPlaying.listens[0].track_metadata.artist_name?.includes(
+          songInfo.artist_credit_name
+        ) ||
+          songInfo.artist_credit_name?.includes(
+            currentlyPlaying.listens[0].track_metadata.artist_name
+          )) &&
+        (currentlyPlaying.listens[0].track_metadata.track_name?.includes(
+          songInfo.recording_name
+        ) ||
+          songInfo.recording_name?.includes(
+            currentlyPlaying.listens[0].track_metadata.track_name
+          ));
+
+      if (songInfo?.recording_name === undefined || !matches) {
         // Song info is empty
 
-        // Check if the track has been scrobbled
-        const checkMostRecentSong = await checkRecentForMatch(
-          currentlyPlaying,
-          listenBrainzToken,
-          brainzUsername
-        );
-        if (checkMostRecentSong) {
-          console.log(checkMostRecentSong);
-        }
         const currentURL =
           currentlyPlaying.listens[0].track_metadata.additional_info
             ?.origin_url || "";
@@ -143,6 +272,32 @@ module.exports = {
             iconURL: interaction.user.displayAvatarURL(),
             name: `Now playing - ${brainzUsername}`,
           });
+
+        // Check if the track has been scrobbled
+        const mostRecentSong = await checkRecentForMatch(
+          currentlyPlaying,
+          listenBrainzToken,
+          brainzUsername
+        );
+
+        if (mostRecentSong) {
+          // Currently playing track has been scrobbled
+          MBID = mostRecentSong.mbid_mapping?.recording_mbid;
+          MSID = mostRecentSong.additional_info?.recording_msid;
+          if (!MSID && !MBID) {
+            console.log(mostRecentSong);
+          }
+
+          // Check if the track has been loved
+          score = await checkIfLoved(
+            MBID,
+            MSID,
+            listenBrainzToken,
+            brainzUsername
+          );
+
+          buttonRow1 = await getLoveButtons(score);
+        }
       } else {
         // Song info is not empty
         // Add track info to embed
@@ -159,10 +314,20 @@ module.exports = {
             name: `Now playing - ${brainzUsername}`,
           });
 
-        MBID = songInfo.recording_mbid;
+        MBID = songInfo?.recording_mbid;
+        MSID = undefined;
 
         // Check if the track has been loved
-        checkIfLoved(MBID, listenBrainzToken, brainzUsername);
+        score = await checkIfLoved(
+          MBID,
+          MSID,
+          listenBrainzToken,
+          brainzUsername
+        );
+
+        if (MBID !== null) {
+          buttonRow1 = await getLoveButtons(score);
+        }
       }
 
       // Get total scrobbles
@@ -186,12 +351,12 @@ module.exports = {
       MBID =
         mostRecentlyPlayed.listens[0].track_metadata?.mbid_mapping
           ?.recording_mbid;
+      MSID =
+        mostRecentlyPlayed.listens[0].track_metadata.additional_info
+          ?.recording_msid;
 
       // Add track info to embed
-      if (
-        mostRecentlyPlayed.listens[0].track_metadata?.mbid_mapping
-          ?.recording_mbid
-      ) {
+      if (MBID) {
         embed
           .setTitle(
             `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
@@ -207,37 +372,26 @@ module.exports = {
       } else {
         const currentURL =
           mostRecentlyPlayed.listens[0].track_metadata.additional_info
-            ?.origin_url;
-        if (currentURL) {
-          embed
-            .setTitle(
-              `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
-            )
-            .setURL(currentURL)
-            .setDescription(
-              `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
-            )
-            .setAuthor({
-              iconURL: interaction.user.displayAvatarURL(),
-              name: `Last track for ${brainzUsername}`,
-            });
-        } else {
-          const currentURL =
-            mostRecentlyPlayed.listens[0].track_metadata.additional_info
-              ?.origin_url;
-          embed
-            .setTitle(
-              `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
-            )
-            .setDescription(
-              `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
-            )
-            .setAuthor({
-              iconURL: interaction.user.displayAvatarURL(),
-              name: `Last track for ${brainzUsername}`,
-            });
-        }
+            ?.origin_url || "";
+
+        embed
+          .setTitle(
+            `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
+          )
+          .setURL(currentURL)
+          .setDescription(
+            `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+          )
+          .setAuthor({
+            iconURL: interaction.user.displayAvatarURL(),
+            name: `Last track for ${brainzUsername}`,
+          });
       }
+
+      // Check if the track has been loved
+      score = await checkIfLoved(MBID, MSID, listenBrainzToken, brainzUsername);
+
+      buttonRow1 = await getLoveButtons(score);
 
       // Get time of last scrobble
       const lastScrobble = new Date(mostRecentlyPlayed.latest_listen_ts * 1000);
@@ -263,6 +417,64 @@ module.exports = {
     }
 
     // Send embed
-    interaction.editReply({ embeds: [embed] });
+    // If there is a button row and the token isn't the default one
+    if (buttonRow1 && listenBrainzToken !== process.env.LISTENBRAINZ_TOKEN) {
+      message = await interaction.editReply({
+        embeds: [embed],
+        components: [buttonRow1],
+      });
+
+      const buttonCollectorFilter = (i) => i.user.id === interaction.user.id;
+      const collector = message.createMessageComponentCollector({
+        ComponentType: ComponentType.Button,
+        filter: buttonCollectorFilter,
+        time: 180_000,
+      });
+
+      setTimeout(function () {
+        buttonRow1.components[0].setDisabled(true);
+        buttonRow1.components[1].setDisabled(true);
+        message.edit({ components: [buttonRow1] });
+      }, 180_000);
+
+      // Handle the collector
+      collector.on("collect", async (buttoni) => {
+        // Check if the button was love
+        if (buttoni.customId === "love") {
+          // User clicked love
+          if (score === 1) {
+            sendFeedback(0, listenBrainzToken, MBID, MSID);
+            buttonRow1.components[0].setStyle(ButtonStyle.Secondary);
+            buttonRow1.components[1].setStyle(ButtonStyle.Secondary);
+            buttoni.update({ components: [buttonRow1] });
+            score = 0;
+          } else {
+            sendFeedback(1, listenBrainzToken, MBID, MSID);
+            buttonRow1.components[0].setStyle(ButtonStyle.Success);
+            buttonRow1.components[1].setStyle(ButtonStyle.Secondary);
+            buttoni.update({ components: [buttonRow1] });
+            score = 1;
+          }
+        }
+        if (buttoni.customId === "unlove") {
+          // User clicked unlove
+          if (score === -1) {
+            sendFeedback(0, listenBrainzToken, MBID, MSID);
+            buttonRow1.components[0].setStyle(ButtonStyle.Secondary);
+            buttonRow1.components[1].setStyle(ButtonStyle.Secondary);
+            buttoni.update({ components: [buttonRow1] });
+            score = 0;
+          } else {
+            sendFeedback(-1, listenBrainzToken, MBID, MSID);
+            buttonRow1.components[0].setStyle(ButtonStyle.Secondary);
+            buttonRow1.components[1].setStyle(ButtonStyle.Success);
+            buttoni.update({ components: [buttonRow1] });
+            score = -1;
+          }
+        }
+      });
+    } else {
+      interaction.editReply({ embeds: [embed] });
+    }
   },
 };
