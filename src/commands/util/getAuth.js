@@ -7,9 +7,14 @@ const userData = require("../../../schemas/userData");
  * Retrieves user data from the database and performs various checks based on the provided interaction.
  *
  * @param {Object<interaction>} interaction - The interaction containing information about the user interaction.
+ * @param {boolean} noAuthNeeded - Whether to skip authentication checks.
  * @return {promise<{username: string, token: string}>} An object containing the user's ListenBrainz username and token.
  */
-module.exports = async (interaction) => {
+module.exports = async (interaction, noAuthNeeded) => {
+  if (noAuthNeeded) {
+    return {};
+  }
+
   // Get user data from database
   const currentUserData = await userData.findOne({
     userID: interaction.user.id,
