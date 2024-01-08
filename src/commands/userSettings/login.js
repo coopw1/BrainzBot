@@ -79,9 +79,9 @@ module.exports = {
       }, 180_000);
 
       // Handle the collector
-      collector.on("collect", async (buttoni) => {
+      collector.on("collect", async (buttonInteraction) => {
         // Check if the button was continue
-        if (buttoni.customId === "continue") {
+        if (buttonInteraction.customId === "continue") {
           // User clicked continue
 
           // Generate a random customId
@@ -109,13 +109,13 @@ module.exports = {
           modal.addComponents(row);
 
           // Send the modal
-          await buttoni.showModal(modal);
+          await buttonInteraction.showModal(modal);
 
           // Create a collector that waits for the user to submit the modal
           const modalCollectorFilter = (modali) =>
-            modali.user.id === buttoni.user.id &&
+            modali.user.id === buttonInteraction.user.id &&
             modali.customId === randomCustomId;
-          buttoni
+          buttonInteraction
             .awaitModalSubmit({ time: 60_000, filter: modalCollectorFilter })
             .then(async (i) => {
               // User submitted the modal
@@ -182,7 +182,7 @@ module.exports = {
                 i.reply({ embeds: [embed], ephemeral: true });
               }
             });
-        } else if (buttoni.customId === "questionmark") {
+        } else if (buttonInteraction.customId === "questionmark") {
           // User clicked questionmark
           const embed = new EmbedBuilder()
             .setTitle("Creating an account")
@@ -194,7 +194,7 @@ module.exports = {
             )
             .setColor(0xeb743b);
           // Send embed
-          buttoni.reply({ embeds: [embed], ephemeral: true });
+          buttonInteraction.reply({ embeds: [embed], ephemeral: true });
         }
       });
     } else {

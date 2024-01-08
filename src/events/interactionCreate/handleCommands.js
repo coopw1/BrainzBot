@@ -17,7 +17,7 @@ module.exports = async (client, interaction) => {
       if (!devs.includes(interaction.member.id)) {
         interaction.reply({
           content: "Only developers are allowed to run this command.",
-          emphemeral: true,
+          ephemeral: true,
         });
         return;
       }
@@ -26,7 +26,7 @@ module.exports = async (client, interaction) => {
       if (!(interaction.guild.id === testServer)) {
         interaction.reply({
           content: "This command cannot run here.",
-          emphemeral: true,
+          ephemeral: true,
         });
         return;
       }
@@ -36,7 +36,7 @@ module.exports = async (client, interaction) => {
         if (!interaction.member.permission.has(permission)) {
           interaction.reply({
             content: "Not enough permissions.",
-            emphemeral: true,
+            ephemeral: true,
           });
           break;
         }
@@ -50,7 +50,7 @@ module.exports = async (client, interaction) => {
         if (!bot.permission.has(permission)) {
           interaction.reply({
             content: "I don't have enough permissions.",
-            emphemeral: true,
+            ephemeral: true,
           });
           break;
         }

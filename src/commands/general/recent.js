@@ -92,7 +92,7 @@ module.exports = {
     );
     // Create base embed
     const baseEmbed = {
-      title: `Lastest tracks for ${brainzUsername}`,
+      title: `Latest tracks for ${brainzUsername}`,
       color: 0x353070,
     };
 

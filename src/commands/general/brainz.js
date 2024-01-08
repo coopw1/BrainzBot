@@ -438,37 +438,37 @@ module.exports = {
       }, 180_000);
 
       // Handle the collector
-      collector.on("collect", async (buttoni) => {
+      collector.on("collect", async (buttonInteraction) => {
         // Check if the button was love
-        if (buttoni.customId === "love") {
+        if (buttonInteraction.customId === "love") {
           // User clicked love
           if (score === 1) {
             sendFeedback(0, listenBrainzToken, MBID, MSID);
             buttonRow1.components[0].setStyle(ButtonStyle.Secondary);
             buttonRow1.components[1].setStyle(ButtonStyle.Secondary);
-            buttoni.update({ components: [buttonRow1] });
+            buttonInteraction.update({ components: [buttonRow1] });
             score = 0;
           } else {
             sendFeedback(1, listenBrainzToken, MBID, MSID);
             buttonRow1.components[0].setStyle(ButtonStyle.Success);
             buttonRow1.components[1].setStyle(ButtonStyle.Secondary);
-            buttoni.update({ components: [buttonRow1] });
+            buttonInteraction.update({ components: [buttonRow1] });
             score = 1;
           }
         }
-        if (buttoni.customId === "unlove") {
+        if (buttonInteraction.customId === "unlove") {
           // User clicked unlove
           if (score === -1) {
             sendFeedback(0, listenBrainzToken, MBID, MSID);
             buttonRow1.components[0].setStyle(ButtonStyle.Secondary);
             buttonRow1.components[1].setStyle(ButtonStyle.Secondary);
-            buttoni.update({ components: [buttonRow1] });
+            buttonInteraction.update({ components: [buttonRow1] });
             score = 0;
           } else {
             sendFeedback(-1, listenBrainzToken, MBID, MSID);
             buttonRow1.components[0].setStyle(ButtonStyle.Secondary);
             buttonRow1.components[1].setStyle(ButtonStyle.Success);
-            buttoni.update({ components: [buttonRow1] });
+            buttonInteraction.update({ components: [buttonRow1] });
             score = -1;
           }
         }
