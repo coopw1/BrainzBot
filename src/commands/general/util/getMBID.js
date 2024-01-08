@@ -34,7 +34,7 @@ module.exports = async (
     // Make request to MusicBrainz
     const response = await axios.get(BASE_URL, PARAMS);
 
-    MBID = response.data[MBIDType][0].id;
+    const MBID = response.data[MBIDType][0].id;
     return MBID;
   } catch (error) {
     console.log("getMBID Error: " + error);

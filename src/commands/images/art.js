@@ -2,7 +2,6 @@ const {
   AttachmentBuilder,
   ApplicationCommandOptionType,
 } = require("discord.js");
-const userData = require("../../../schemas/userData");
 const convertSvgToPng = require("../util/convertSvgToPng");
 const getAuth = require("../util/getAuth");
 
@@ -185,7 +184,7 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    const { brainzUsername } = await getAuth(interaction);
     if (interaction.replied) {
       console.log("replied");
       return;

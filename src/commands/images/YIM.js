@@ -7,7 +7,6 @@ const {
   ActionRowBuilder,
   ComponentType,
 } = require("discord.js");
-const userData = require("../../../schemas/userData");
 const convertSvgToPng = require("../util/convertSvgToPng");
 const getAuth = require("../util/getAuth");
 
@@ -61,7 +60,7 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    const { brainzUsername } = await getAuth(interaction);
     if (interaction.replied) {
       console.log("replied");
       return;
@@ -82,7 +81,7 @@ module.exports = {
 
       let attachments = [];
       for (const imageType of imageTypes) {
-        link = `https://api.listenbrainz.org/1/art/year-in-music/2023/${brainzUsername}?image=${imageType}`;
+        const link = `https://api.listenbrainz.org/1/art/year-in-music/2023/${brainzUsername}?image=${imageType}`;
         const png = await convertSvgToPng(link);
         const attachment = new AttachmentBuilder(await png, {
           name: `${imageType}.png`,
@@ -191,7 +190,7 @@ module.exports = {
     } else {
       // If image type is provided
       const imageType = interaction.options.get("image").value;
-      link = `https://api.listenbrainz.org/1/art/year-in-music/2023/${brainzUsername}?image=${imageType}`;
+      const link = `https://api.listenbrainz.org/1/art/year-in-music/2023/${brainzUsername}?image=${imageType}`;
       const png = await convertSvgToPng(link);
       const attachment = new AttachmentBuilder(await png, {
         name: `${imageType}.png`,

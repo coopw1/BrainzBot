@@ -273,15 +273,25 @@ module.exports = {
     const items = await response.data[searchType];
     let maxLength = items.length;
 
-    const baseEmbed = {
-      title: "Search results",
-      color: 0x353070,
-    };
-
     // Create list of all 25 items
     const embeds = [];
 
     items.forEach((item, index) => {
+      let MBID;
+      let artistName;
+      let artistType;
+      let artistArea;
+      let artistDisambiguation;
+      let artistBegin;
+      let artistEnd;
+      let artistTags;
+      let releaseName;
+      let artist;
+      let artistMBID;
+      let recordingName;
+      let releaseMBID;
+      let releaseDate;
+
       switch (searchType) {
         case "artists":
           MBID = item.id;
@@ -307,10 +317,10 @@ module.exports = {
           });
 
           if (artistTags) {
-            sortedTags = artistTags.sort((a, b) => b.count - a.count);
+            const sortedTags = artistTags.sort((a, b) => b.count - a.count);
             let tagsList = "";
             sortedTags.forEach((tag, index) => {
-              linkableTag = tag.name.replaceAll(" ", "%20");
+              const linkableTag = tag.name.replaceAll(" ", "%20");
               if (tag.count == 1 && index < 10) {
                 tagsList =
                   tagsList +
@@ -348,7 +358,7 @@ module.exports = {
           artist = item["artist-credit"][0].name;
           artistMBID = item["artist-credit"][0].artist.id;
           releaseMBID = item.releases[0].id;
-          realaseDate = item["first-release-date"] || "Unknown";
+          releaseDate = item["first-release-date"] || "Unknown";
 
           //Create embed
           embeds[index] = new EmbedBuilder({
@@ -356,7 +366,7 @@ module.exports = {
             color: 0x353070,
             description:
               `**[${recordingName}](https://musicbrainz.org/recording/${MBID})** by *[${artist}](https://listenbrainz.org/artist/${artistMBID})*\n` +
-              `First released: ${realaseDate}\n\nRelease(s):`,
+              `First released: ${releaseDate}\n\nRelease(s):`,
           }).setThumbnail(
             `https://coverartarchive.org/release/${releaseMBID}/front-250`
           );

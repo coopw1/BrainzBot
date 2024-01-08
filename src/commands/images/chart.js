@@ -2,11 +2,9 @@ const {
   ApplicationCommandOptionType,
   AttachmentBuilder,
   EmbedBuilder,
-  time,
 } = require("discord.js");
 
 const convertSvgToPng = require("../util/convertSvgToPng");
-const userData = require("../../../schemas/userData");
 const getAuth = require("../util/getAuth");
 
 module.exports = {
@@ -22,7 +20,7 @@ module.exports = {
       required: false,
     },
     {
-      name: "timeperiod",
+      name: "timePeriod",
       description: "Time period",
       type: ApplicationCommandOptionType.String,
       required: false,
@@ -76,38 +74,38 @@ module.exports = {
   ],
   // deleted: Boolean,
   callback: async (client, interaction) => {
-    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    const { brainzUsername } = await getAuth(interaction);
     if (interaction.replied) {
       return;
     }
 
-    const timeperiod = interaction.options.get("timeperiod")?.value || "week";
+    const timePeriod = interaction.options.get("timePeriod")?.value || "week";
     const dimension = interaction.options.get("dimension")?.value || 3;
 
     // Create base embed
     const embed = new EmbedBuilder({
       color: 0x353070,
     });
-    if (timeperiod === "all_time") {
+    if (timePeriod === "all_time") {
       embed.setTitle(
         `${dimension}x${dimension} All Time chart for ${brainzUsername}`
       );
-    } else if (timeperiod === "half_yearly") {
+    } else if (timePeriod === "half_yearly") {
       embed.setTitle(
         `${dimension}x${dimension} Half Yearly chart for ${brainzUsername}`
       );
     } else {
       embed.setTitle(
         `${dimension}x${dimension} ${
-          timeperiod[0].toUpperCase() + timeperiod.substring(1)
+          timePeriod[0].toUpperCase() + timePeriod.substring(1)
         }ly chart for ${brainzUsername}`
       );
     }
 
     // Send back image of chart
-    const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timeperiod}/${dimension}/0/1024`;
+    const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timePeriod}/${dimension}/0/1024`;
 
-    png = await convertSvgToPng(imageURL);
+    const png = await convertSvgToPng(imageURL);
 
     const attachment = new AttachmentBuilder(await png, {
       name: "chart.png",

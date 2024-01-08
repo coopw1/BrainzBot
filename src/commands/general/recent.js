@@ -4,7 +4,6 @@ const {
   ApplicationCommandOptionType,
 } = require("discord.js");
 
-const userData = require("../../../schemas/userData");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
 const pagination = require("../util/pagination");
@@ -87,7 +86,10 @@ module.exports = {
     });
 
     // Get total scrobbles
-    totalScrobbles = await getTotalScrobbles(listenBrainzToken, brainzUsername);
+    const totalScrobbles = await getTotalScrobbles(
+      listenBrainzToken,
+      brainzUsername
+    );
     // Create base embed
     const baseEmbed = {
       title: `Lastest tracks for ${brainzUsername}`,

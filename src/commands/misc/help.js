@@ -1,4 +1,4 @@
-const { EmbedBuilder, ApplicationCommandOptionType } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const getLocalCommands = require("../../utils/getLocalCommands");
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
     });
 
     // Get all commands
-    localCommands = await getLocalCommands();
+    const localCommands = await getLocalCommands();
 
     // Group commands by category
     const commandsByCategory = {};

@@ -331,7 +331,7 @@ module.exports = {
       }
 
       // Get total scrobbles
-      totalScrobbles = await getTotalScrobbles(
+      const totalScrobbles = await getTotalScrobbles(
         listenBrainzToken,
         brainzUsername
       );
@@ -399,7 +399,7 @@ module.exports = {
       embed.setTimestamp(lastScrobble);
 
       // Get total scrobbles
-      totalScrobbles = await getTotalScrobbles(
+      const totalScrobbles = await getTotalScrobbles(
         listenBrainzToken,
         brainzUsername
       );
@@ -411,7 +411,7 @@ module.exports = {
 
     if (!(MBID === undefined)) {
       // Get thumbnail from MBID
-      albumCover = await getAlbumCover(MBID);
+      const albumCover = await getAlbumCover(MBID);
       // Add thumbnail
       embed.setThumbnail(albumCover);
     }
@@ -419,7 +419,7 @@ module.exports = {
     // Send embed
     // If there is a button row and the token isn't the default one
     if (buttonRow1 && listenBrainzToken !== process.env.LISTENBRAINZ_TOKEN) {
-      message = await interaction.editReply({
+      const message = await interaction.editReply({
         embeds: [embed],
         components: [buttonRow1],
       });

@@ -124,8 +124,9 @@ module.exports = {
               let response;
 
               try {
-                BASE_URL = "https://api.listenbrainz.org/1/validate-token";
-                AUTH_HEADER = {
+                const BASE_URL =
+                  "https://api.listenbrainz.org/1/validate-token";
+                const AUTH_HEADER = {
                   Authorization: `Token ${token}`,
                 };
 
@@ -180,10 +181,7 @@ module.exports = {
                   .setColor(0xf44336);
                 i.reply({ embeds: [embed], ephemeral: true });
               }
-            })
-            .catch((error) =>
-              console.log("No modal submit interaction was collected")
-            );
+            });
         } else if (buttoni.customId === "questionmark") {
           // User clicked questionmark
           const embed = new EmbedBuilder()
@@ -206,8 +204,8 @@ module.exports = {
       let response;
 
       try {
-        BASE_URL = "https://api.listenbrainz.org/1/validate-token";
-        AUTH_HEADER = {
+        const BASE_URL = "https://api.listenbrainz.org/1/validate-token";
+        const AUTH_HEADER = {
           Authorization: `Token ${token}`,
         };
 

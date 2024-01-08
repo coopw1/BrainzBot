@@ -270,8 +270,8 @@ module.exports = {
 
       let description = "";
       topStatistics.listeners.forEach(async (item, index) => {
-        userName = item.user_name;
-        listenCount = item.listen_count;
+        const userName = item.user_name;
+        const listenCount = item.listen_count;
 
         description =
           description +
@@ -343,6 +343,8 @@ module.exports = {
     // Get data for each listen
     topStatistics[searchType].forEach(async (item, index) => {
       let itemName = item[searchType.slice(0, -1).concat("_name")];
+      let releaseName;
+      let artistName;
       if (searchType === "recordings") {
         itemName = item.track_name;
         releaseName = item?.release_name || "Unknown Artist";
