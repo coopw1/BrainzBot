@@ -20,7 +20,7 @@ module.exports = {
       required: false,
     },
     {
-      name: "timePeriod",
+      name: "timeperiod",
       description: "Time period",
       type: ApplicationCommandOptionType.String,
       required: false,
@@ -79,7 +79,7 @@ module.exports = {
       return;
     }
 
-    const timePeriod = interaction.options.get("timePeriod")?.value || "week";
+    const timePeriod = interaction.options.get("timeperiod")?.value || "week";
     const dimension = interaction.options.get("dimension")?.value || 3;
 
     // Create base embed
