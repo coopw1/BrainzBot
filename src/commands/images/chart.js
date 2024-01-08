@@ -79,7 +79,6 @@ module.exports = {
   callback: async (client, interaction) => {
     const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
     if (interaction.replied) {
-      console.log("replied");
       return;
     }
 
