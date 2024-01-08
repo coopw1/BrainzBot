@@ -4,7 +4,6 @@ const {
   EmbedBuilder,
   time,
 } = require("discord.js");
-const axios = require("axios").default;
 
 const convertSvgToPng = require("../util/convertSvgToPng");
 const userData = require("../../../schemas/userData");
