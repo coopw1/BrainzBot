@@ -372,19 +372,19 @@ module.exports = {
     let baseEmbed;
     if (timeperiod === "all_time") {
       baseEmbed = {
-        title: `Top All Time ${searchType} for ${interaction.user.username}`,
+        title: `Top All Time ${searchType} for ${brainzUsername}`,
         color: 0x353070,
       };
     } else if (timeperiod === "half_yearly") {
       baseEmbed = {
-        title: `Top Half Yearly ${searchType} for ${interaction.user.username}`,
+        title: `Top Half Yearly ${searchType} for ${brainzUsername}`,
         color: 0x353070,
       };
     } else {
       baseEmbed = {
         title: `Top ${
           timeperiod[0].toUpperCase() + timeperiod.substring(1)
-        }ly ${searchType} for ${interaction.user.username}`,
+        }ly ${searchType} for ${brainzUsername}`,
         color: 0x353070,
       };
     }

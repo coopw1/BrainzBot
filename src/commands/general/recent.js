@@ -90,7 +90,7 @@ module.exports = {
     totalScrobbles = await getTotalScrobbles(listenBrainzToken, brainzUsername);
     // Create base embed
     const baseEmbed = {
-      title: `Lastest tracks for ${interaction.user.username}`,
+      title: `Lastest tracks for ${brainzUsername}`,
       color: 0x353070,
     };
 
@@ -124,7 +124,7 @@ module.exports = {
       interaction,
       embeds,
       maxPages,
-      ` - ${interaction.user.username} has ${totalScrobbles} scrobbles`
+      ` - ${brainzUsername} has ${totalScrobbles} scrobbles`
     );
   },
 };
