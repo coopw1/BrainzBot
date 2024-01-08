@@ -84,6 +84,10 @@ module.exports = async (interaction, noAuthNeeded) => {
     brainzUsername = interaction.options.get("user").value;
     // Use coopw-DiscordBrainzBot's token
     listenBrainzToken = process.env.LISTENBRAINZ_TOKEN;
+  } else if (!currentUserData.ListenBrainzToken) {
+    // Get username from DB
+    brainzUsername = currentUserData.ListenBrainzUsername;
+    listenBrainzToken = process.env.LISTENBRAINZ_TOKEN;
   } else {
     // Get username from DB
     brainzUsername = currentUserData.ListenBrainzUsername;

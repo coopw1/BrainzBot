@@ -16,7 +16,7 @@ const userData = require("../../../schemas/userData");
 module.exports = {
   name: "login",
   description:
-    "Gives you a link to connect your ListenBrainz account to brainzbot",
+    "Gives you a link to connect your ListenBrainz account to BrainzBot",
   options: [
     {
       name: "token",
