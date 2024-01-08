@@ -292,7 +292,6 @@ module.exports = {
         interaction.reply({ embeds: [embed], ephemeral: true });
         return;
       }
-      console.log(topStatistics);
       let embed;
       if (searchType === "release-groups") {
         embed = new EmbedBuilder()
