@@ -1,6 +1,5 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
 const getTopStatistics = require("./util/getTopStatistics");
-const userData = require("../../../schemas/userData");
 const pagination = require("../util/pagination");
 const getMBID = require("./util/getMBID");
 const getAuth = require("../util/getAuth");
@@ -226,7 +225,13 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    const noAuthNeeded =
+      interaction.options.getSubcommandGroup() === "listeners";
+
+    const { brainzUsername, listenBrainzToken } = await getAuth(
+      interaction,
+      noAuthNeeded
+    );
     if (interaction.replied) {
       return;
     }
@@ -340,8 +345,13 @@ module.exports = {
       let itemName = item[searchType.slice(0, -1).concat("_name")];
       if (searchType === "recordings") {
         itemName = item.track_name;
+        releaseName = item?.release_name || "Unknown Artist";
+      }
+      if (searchType === "releases" || searchType === "recordings") {
+        artistName = item?.artist_name || "Unknown Artist";
       }
       const MBID = item[searchType.slice(0, -1).concat("_mbid")];
+
       const amount = item.listen_count;
       const position = index + 1;
 
@@ -365,7 +375,7 @@ module.exports = {
               `${position}. **[${itemName}](https://musicbrainz.org/${searchType.slice(
                 0,
                 -1
-              )}/${MBID})** - *${amount} plays*\n`;
+              )}/${MBID} "${itemName}\n  ${artistName} - ${releaseName}")** - *${amount} plays*\n`;
             break;
           case "releases":
             descriptions[Math.floor(index / 10)] =
@@ -373,7 +383,7 @@ module.exports = {
               `${position}. **[${itemName}](https://musicbrainz.org/${searchType.slice(
                 0,
                 -1
-              )}/${MBID})** - *${amount} plays*\n`;
+              )}/${MBID} "${artistName} - ${itemName}")** - *${amount} plays*\n`;
             break;
         }
       }
