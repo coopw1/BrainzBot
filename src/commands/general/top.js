@@ -337,9 +337,9 @@ module.exports = {
 
     // Get data for each listen
     topStatistics[searchType].forEach(async (item, index) => {
-      let name = item[searchType.slice(0, -1).concat("_name")];
+      let itemName = item[searchType.slice(0, -1).concat("_name")];
       if (searchType === "recordings") {
-        artistName = item.track_name;
+        itemName = item.track_name;
       }
       const MBID = item[searchType.slice(0, -1).concat("_mbid")];
       const amount = item.listen_count;
@@ -348,22 +348,33 @@ module.exports = {
       if (MBID === null) {
         descriptions[Math.floor(index / 10)] =
           descriptions[Math.floor(index / 10)] +
-          `${position}. **${artistName}** - *${amount} plays*\n`;
+          `${position}. **${itemName}** - *${amount} plays*\n`;
       } else {
-        if (searchType === "artists") {
-          descriptions[Math.floor(index / 10)] =
-            descriptions[Math.floor(index / 10)] +
-            `${position}. **[${artistName}](https://listenbrainz.org/${searchType.slice(
-              0,
-              -1
-            )}/${MBID})** - *${amount} plays*\n`;
-        } else {
-          descriptions[Math.floor(index / 10)] =
-            descriptions[Math.floor(index / 10)] +
-            `${position}. **[${artistName}](https://musicbrainz.org/${searchType.slice(
-              0,
-              -1
-            )}/${MBID})** - *${amount} plays*\n`;
+        switch (searchType) {
+          case "artists":
+            descriptions[Math.floor(index / 10)] =
+              descriptions[Math.floor(index / 10)] +
+              `${position}. **[${itemName}](https://listenbrainz.org/${searchType.slice(
+                0,
+                -1
+              )}/${MBID})** - *${amount} plays*\n`;
+            break;
+          case "recordings":
+            descriptions[Math.floor(index / 10)] =
+              descriptions[Math.floor(index / 10)] +
+              `${position}. **[${itemName}](https://musicbrainz.org/${searchType.slice(
+                0,
+                -1
+              )}/${MBID})** - *${amount} plays*\n`;
+            break;
+          case "releases":
+            descriptions[Math.floor(index / 10)] =
+              descriptions[Math.floor(index / 10)] +
+              `${position}. **[${itemName}](https://musicbrainz.org/${searchType.slice(
+                0,
+                -1
+              )}/${MBID})** - *${amount} plays*\n`;
+            break;
         }
       }
     });
