@@ -8,6 +8,7 @@ const getRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getAlbumCover = require("./util/getAlbumCover");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
 const getSongInfo = require("./util/getSongInfo");
+const getAuth = require("../util/getAuth");
 
 /**
  * Checks if the currently playing song matches the most recently played song.
@@ -182,7 +183,7 @@ module.exports = {
       );
 
       // Get MBID
-      const MBID =
+      MBID =
         mostRecentlyPlayed.listens[0].track_metadata?.mbid_mapping
           ?.recording_mbid;
 
@@ -206,20 +207,36 @@ module.exports = {
       } else {
         const currentURL =
           mostRecentlyPlayed.listens[0].track_metadata.additional_info
-            ?.origin_url || "";
-
-        embed
-          .setTitle(
-            `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
-          )
-          .setURL(currentURL)
-          .setDescription(
-            `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
-          )
-          .setAuthor({
-            iconURL: interaction.user.displayAvatarURL(),
-            name: `Last track for ${brainzUsername}`,
-          });
+            ?.origin_url;
+        if (currentURL) {
+          embed
+            .setTitle(
+              `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
+            )
+            .setURL(currentURL)
+            .setDescription(
+              `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+            )
+            .setAuthor({
+              iconURL: interaction.user.displayAvatarURL(),
+              name: `Last track for ${brainzUsername}`,
+            });
+        } else {
+          const currentURL =
+            mostRecentlyPlayed.listens[0].track_metadata.additional_info
+              ?.origin_url;
+          embed
+            .setTitle(
+              `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
+            )
+            .setDescription(
+              `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+            )
+            .setAuthor({
+              iconURL: interaction.user.displayAvatarURL(),
+              name: `Last track for ${brainzUsername}`,
+            });
+        }
       }
 
       // Get time of last scrobble
