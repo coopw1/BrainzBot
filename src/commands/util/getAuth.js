@@ -24,8 +24,8 @@ module.exports = async (interaction) => {
           "Use the </login:1190736297770352801> command to link your ListenBrainz account."
       )
       .setColor("ba0000");
-    interaction.reply({ embeds: [embed], ephemeral: true });
-    return;
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+    return {};
   } else if (interaction.options.get("user")) {
     // Username provided
 
@@ -42,8 +42,8 @@ module.exports = async (interaction) => {
       headers: AUTH_HEADER,
     };
 
-    const response = await axios.get(BASE_URL, PARAMS).catch((error) => {
-      interaction.reply({
+    const response = await axios.get(BASE_URL, PARAMS).catch(async (error) => {
+      await interaction.reply({
         embeds: [
           new EmbedBuilder()
             .setDescription(
@@ -64,10 +64,11 @@ module.exports = async (interaction) => {
           `❌ User ${interaction.options.get("user").value} doesn't exist.`
         )
         .setColor("ba0000");
-      interaction.reply({ embeds: [embed], ephemeral: true });
-      return;
+      await interaction.reply({ embeds: [embed], ephemeral: true });
+      return {};
     }
   }
+
   await interaction.deferReply();
 
   let brainzUsername;
