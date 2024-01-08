@@ -168,7 +168,7 @@ module.exports = {
                 // Send confirmation
                 const embed = new EmbedBuilder()
                   .setDescription(
-                    `✅ You have been logged in to .fmbot with the username [${response.data.user_name}](https://listenbrainz.org/user/${response.data.user_name}/)!`
+                    `✅ You have been logged in to BrainzBot with the username [${response.data.user_name}](https://listenbrainz.org/user/${response.data.user_name}/)!`
                   )
                   .setColor("32cd32");
                 i.reply({ embeds: [embed], ephemeral: true });
@@ -250,7 +250,7 @@ module.exports = {
         // Send confirmation
         const embed = new EmbedBuilder()
           .setDescription(
-            `✅ You have been logged in to .fmbot with the username [${response.data.user_name}](https://listenbrainz.org/user/${response.data.user_name}/)!`
+            `✅ You have been logged in to BrainzBot with the username [${response.data.user_name}](https://listenbrainz.org/user/${response.data.user_name}/)!`
           )
           .setColor("32cd32");
         interaction.reply({ embeds: [embed], ephemeral: true });
