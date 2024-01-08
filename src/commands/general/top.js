@@ -3,6 +3,7 @@ const getTopStatistics = require("./util/getTopStatistics");
 const userData = require("../../../schemas/userData");
 const pagination = require("../util/pagination");
 const getMBID = require("./util/getMBID");
+const getAuth = require("../util/getAuth");
 
 module.exports = {
   name: "top",
@@ -17,7 +18,7 @@ module.exports = {
       options: [
         {
           name: "artists",
-          description: "Show your most listened to artists",
+          description: "Shows the top listener's for an artist",
           type: ApplicationCommandOptionType.Subcommand,
           options: [
             {
@@ -58,7 +59,7 @@ module.exports = {
         },
         {
           name: "albums",
-          description: "Show your most listened to albums",
+          description: "Shows the top listener's for an album",
           type: ApplicationCommandOptionType.Subcommand,
           options: [
             {
@@ -105,6 +106,12 @@ module.exports = {
       type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
+          name: "user",
+          description: "A ListenBrainz username",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
           name: "timeperiod",
           description: "Time period",
           type: ApplicationCommandOptionType.String,
@@ -139,6 +146,12 @@ module.exports = {
       description: "Show your most listened to albums",
       type: ApplicationCommandOptionType.Subcommand,
       options: [
+        {
+          name: "user",
+          description: "A ListenBrainz username",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
         {
           name: "timeperiod",
           description: "Time period",
@@ -175,6 +188,12 @@ module.exports = {
       type: ApplicationCommandOptionType.Subcommand,
       options: [
         {
+          name: "user",
+          description: "A ListenBrainz username",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
           name: "timeperiod",
           description: "Time period",
           type: ApplicationCommandOptionType.String,
@@ -207,19 +226,8 @@ module.exports = {
   ],
 
   callback: async (client, interaction) => {
-    // Get user data from database
-    const currentUserData = await userData.findOne({
-      userID: interaction.user.id,
-    });
-
-    if (currentUserData === null) {
-      const embed = new EmbedBuilder()
-        .setDescription(
-          "❌ You have not linked your ListenBrainz account yet!\n" +
-            "Use the </login:1190736297770352801> command to link your ListenBrainz account."
-        )
-        .setColor("ba0000");
-      interaction.reply({ embeds: [embed], ephemeral: true });
+    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    if (interaction.replied) {
       return;
     }
 
@@ -236,8 +244,6 @@ module.exports = {
         break;
     }
 
-    const brainzUsername = currentUserData.ListenBrainzUsername;
-    const listenBrainzToken = currentUserData.ListenBrainzToken;
     if (interaction.options.getSubcommandGroup() === "listeners") {
       if (searchType === "releases") {
         searchType = "release-groups";

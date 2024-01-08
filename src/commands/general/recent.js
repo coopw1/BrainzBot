@@ -4,31 +4,26 @@ const userData = require("../../../schemas/userData");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
 const getTotalScrobbles = require("./util/getTotalScrobbles");
 const pagination = require("../util/pagination");
+const getAuth = require("../util/getAuth");
 
 module.exports = {
   name: "recent",
   description: "Get your recent listens",
   category: "General",
+  options: [
+    {
+      name: "user",
+      description: "A ListenBrainz username",
+      type: ApplicationCommandOptionType.String,
+      required: false,
+    },
+  ],
 
   callback: async (client, interaction) => {
-    // Get user data from database
-    const currentUserData = await userData.findOne({
-      userID: interaction.user.id,
-    });
-
-    if (currentUserData === null) {
-      const embed = new EmbedBuilder()
-        .setDescription(
-          "❌ You have not linked your ListenBrainz account yet!\n" +
-            "Use the </login:1190736297770352801> command to link your ListenBrainz account."
-        )
-        .setColor("ba0000");
-      interaction.reply({ embeds: [embed], ephemeral: true });
+    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    if (interaction.replied) {
       return;
     }
-
-    const brainzUsername = currentUserData.ListenBrainzUsername;
-    const listenBrainzToken = currentUserData.ListenBrainzToken;
 
     let descriptions = ["", "", "", "", ""];
 
