@@ -39,6 +39,9 @@ module.exports = {
           "**[Click here to get your ListenBrainz User token](https://listenbrainz.org/profile/)**\n\n" +
             "Once you have copied your token, press the button below"
         )
+        .setFooter({
+          text: "Press the ? button to learn more!",
+        })
         .setColor(0x353070);
 
       // Create a button with the label "Continue"
@@ -194,7 +197,7 @@ module.exports = {
             )
             .setColor(0xeb743b);
           const embed2 = new EmbedBuilder()
-            .setTitle('"Do I need to give my token?')
+            .setTitle('"Do I need to give my token?"')
             .setDescription(
               'You can also login with only your username using `/settings user username:"yourUsername"`\n' +
                 "### Token \n" +
