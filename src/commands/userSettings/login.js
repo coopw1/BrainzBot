@@ -193,8 +193,22 @@ module.exports = {
                 "After that, you can [get your ListenBrainz User token](https://listenbrainz.org/profile/)."
             )
             .setColor(0xeb743b);
+          const embed2 = new EmbedBuilder()
+            .setTitle('"Do I need to give my token?')
+            .setDescription(
+              'You can also login with only your username using `/settings user username:"yourUsername"`\n' +
+                "### Token \n" +
+                "* Allows BrainzBot to confirm your identity with ListenBrainz.\n" +
+                "* Used to make requests to ListenBrainz.\n" +
+                "* Carries the risks that come with giving full access to your ListenBrainz account.\n" +
+                "* Will never be shared with anyone.\n" +
+                "### Username\n" +
+                "* Can be used for most of the bot's functionality.\n" +
+                "* Will not be able to use any functionality that requires authentication, such as liking songs.\n"
+            )
+            .setColor(0xeb743b);
           // Send embed
-          buttonInteraction.reply({ embeds: [embed], ephemeral: true });
+          buttonInteraction.reply({ embeds: [embed, embed2], ephemeral: true });
         }
       });
     } else {
