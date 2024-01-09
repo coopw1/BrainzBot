@@ -152,6 +152,12 @@ module.exports = {
           required: false,
         },
         {
+          name: "artist",
+          description: "Filter your top tracks by artist!",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
           name: "timeperiod",
           description: "Time period",
           type: ApplicationCommandOptionType.String,
@@ -189,6 +195,12 @@ module.exports = {
         {
           name: "user",
           description: "A ListenBrainz username",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "artist",
+          description: "Filter your top tracks by artist!",
           type: ApplicationCommandOptionType.String,
           required: false,
         },
@@ -289,7 +301,7 @@ module.exports = {
               .slice(0, -1)} has no listeners!`
           )
           .setColor("ba0000");
-        interaction.reply({ embeds: [embed], ephemeral: true });
+        interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
       }
       let embed;
@@ -311,15 +323,19 @@ module.exports = {
           .setColor(0x353070);
       }
 
-      interaction.reply({ embeds: [embed], ephemeral: false });
+      interaction.editReply({ embeds: [embed], ephemeral: false });
       return;
     }
 
+    const count = interaction.options.get("artist") ? 100 : 100;
     const topStatistics = await getTopStatistics(
       listenBrainzToken,
       brainzUsername,
       searchType,
-      interaction.options.get("timeperiod")?.value || "week"
+      interaction.options.get("timeperiod")?.value || "week",
+      false,
+      null,
+      count
     );
 
     // Check if there are no recently played tracks
@@ -329,10 +345,34 @@ module.exports = {
           `❌ You have no top ${interaction.options.getSubcommand()} stats!`
         )
         .setColor("ba0000");
-      interaction.reply({ embeds: [embed], ephemeral: true });
+      interaction.editReply({ embeds: [embed], ephemeral: true });
       return;
     }
-    const maxPages = Math.ceil(topStatistics.count / 10);
+
+    let footer;
+    if (interaction.options.get("artist")) {
+      topStatistics[searchType] = topStatistics[searchType].filter((item) => {
+        return item.artist_name
+          .toLowerCase()
+          .includes(interaction.options.get("artist").value.toLowerCase());
+      });
+      if (topStatistics[searchType].length === 0) {
+        const embed = new EmbedBuilder()
+          .setDescription(
+            `❌ You have no top listens to ${
+              interaction.options.get("artist").value
+            }!`
+          )
+          .setColor("ba0000");
+        interaction.editReply({ embeds: [embed], ephemeral: true });
+        return;
+      }
+      footer = ` • ${topStatistics[searchType].length} results for ${
+        interaction.options.get("artist").value
+      }`;
+    }
+
+    const maxPages = Math.ceil(topStatistics[searchType].length / 10);
     let descriptions = [];
 
     for (let i = 0; i < maxPages; i++) {
@@ -419,6 +459,6 @@ module.exports = {
       );
     }
 
-    pagination(interaction, embeds, maxPages);
+    pagination(interaction, embeds, maxPages, footer);
   },
 };

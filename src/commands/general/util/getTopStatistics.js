@@ -9,6 +9,7 @@ const axios = require("axios").default;
  * @param {string} timePeriod - The time period for which to retrieve statistics.
  * @param {boolean} [getListeners=false] - Optional parameter to retrieve listeners for a specific MBID.
  * @param {string} [MBID] - Optional parameter for the MBID of an artist or release.
+ * @param {number} [count=100] - Optional parameter for the number of top statistics to retrieve.
  * @return {Promise<Object>} A promise that resolves to the top statistics retrieved from the ListenBrainz API.
  */
 module.exports = async (
@@ -17,7 +18,8 @@ module.exports = async (
   searchType,
   timePeriod,
   getListeners = false,
-  MBID
+  MBID,
+  count = 100
 ) => {
   try {
     const AUTH_HEADER = {
@@ -40,7 +42,7 @@ module.exports = async (
       PARAMS = {
         params: {
           range: timePeriod,
-          count: 100,
+          count: count,
         },
         headers: AUTH_HEADER,
       };
