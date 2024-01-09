@@ -1,8 +1,10 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+
 const getTopStatistics = require("./util/getTopStatistics");
 const pagination = require("../util/pagination");
 const getMBID = require("./util/getMBID");
 const getAuth = require("../util/getAuth");
+const stringToUnicode = require("../util/stringToUnicode");
 
 module.exports = {
   name: "top",
@@ -327,7 +329,7 @@ module.exports = {
       return;
     }
 
-    const count = interaction.options.get("artist") ? 100 : 100;
+    const count = interaction.options.get("artist") ? 1000 : 100;
     const topStatistics = await getTopStatistics(
       listenBrainzToken,
       brainzUsername,
@@ -352,9 +354,18 @@ module.exports = {
     let footer;
     if (interaction.options.get("artist")) {
       topStatistics[searchType] = topStatistics[searchType].filter((item) => {
-        return item.artist_name
-          .toLowerCase()
-          .includes(interaction.options.get("artist").value.toLowerCase());
+        return (
+          item.artist_name
+            .toLowerCase()
+            .includes(interaction.options.get("artist").value.toLowerCase()) ||
+          item.artist_name
+            .toLowerCase()
+            .includes(
+              stringToUnicode(
+                interaction.options.get("artist").value.toLowerCase()
+              )
+            )
+        );
       });
       if (topStatistics[searchType].length === 0) {
         const embed = new EmbedBuilder()
@@ -367,9 +378,11 @@ module.exports = {
         interaction.editReply({ embeds: [embed], ephemeral: true });
         return;
       }
-      footer = ` • ${topStatistics[searchType].length} results for ${
+      footer = ` • ${
+        topStatistics[searchType].length
+      } results for ${stringToUnicode(
         interaction.options.get("artist").value
-      }`;
+      )}`;
     }
 
     const maxPages = Math.ceil(topStatistics[searchType].length / 10);
