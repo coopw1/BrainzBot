@@ -118,9 +118,11 @@ module.exports = {
       let message = await interaction.editReply({
         files: [attachments[currentPage]],
         embeds: [
-          embed.setFooter({
-            text: `Page ${currentPage + 1}/${maxPages}`,
-          }),
+          embed
+            .setFooter({
+              text: `Page ${currentPage + 1}/${maxPages}`,
+            })
+            .setImage(`attachment://${attachments[currentPage].name}`),
         ],
         components: [row],
       });
@@ -157,9 +159,11 @@ module.exports = {
           message = await interaction.editReply({
             files: [attachments[currentPage]],
             embeds: [
-              embed.setFooter({
-                text: `Page ${currentPage + 1}/${maxPages}`,
-              }),
+              embed
+                .setFooter({
+                  text: `Page ${currentPage + 1}/${maxPages}`,
+                })
+                .setImage(`attachment://${attachments[currentPage].name}`),
             ],
             components: [row],
           });
@@ -179,9 +183,11 @@ module.exports = {
           message = await interaction.editReply({
             files: [attachments[currentPage]],
             embeds: [
-              embed.setFooter({
-                text: `Page ${currentPage + 1}/${maxPages}`,
-              }),
+              embed
+                .setFooter({
+                  text: `Page ${currentPage + 1}/${maxPages}`,
+                })
+                .setImage(`attachment://${attachments[currentPage].name}`),
             ],
             components: [row],
           });
