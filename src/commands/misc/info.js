@@ -67,7 +67,7 @@ module.exports = {
             "[Github](https://github.com/coopw1/BrainzBot)\n" +
             "[Support Server](https://discord.gg/gKdHvFKfCa)\n" +
             "[Invite Bot](https://discord.com/oauth2/authorize?client_id=1191438412159389806&permissions=414464658496&scope=bot)\n" +
-            "[Support the bot!](https://github.com/sponsors/coopw1",
+            "[Support the bot!](https://github.com/sponsors/coopw1)",
         },
         {
           name: "Usage",
