@@ -12,6 +12,7 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
     const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
     const AUTH_HEADER = {
       Authorization: `Token ${listenBrainzToken}`,
+      "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
     };
 
     // Make request to ListenBrainz

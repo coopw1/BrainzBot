@@ -19,7 +19,9 @@ const preset = presets.node({
  * @return {promise<Buffer>} - The converted PNG image.
  */
 module.exports = async (link) => {
-  const response = await axios.get(link);
+  const response = await axios.get(link, {
+    headers: { "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)" },
+  });
   const svg = response.data;
   const canvas = preset.createCanvas(800, 600);
   const ctx = canvas.getContext("2d");

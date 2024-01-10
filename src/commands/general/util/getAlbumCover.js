@@ -11,6 +11,9 @@ module.exports = async (MBID) => {
   try {
     const BASE_URL = "http://musicbrainz.org/ws/2/recording/";
     const PARAMS = {
+      headers: {
+        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      },
       params: {
         query: `rid:${MBID}`,
       },

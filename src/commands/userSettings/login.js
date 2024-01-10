@@ -131,6 +131,7 @@ module.exports = {
                   "https://api.listenbrainz.org/1/validate-token";
                 const AUTH_HEADER = {
                   Authorization: `Token ${token}`,
+                  "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
                 };
 
                 // Make request to ListenBrainz
@@ -224,6 +225,7 @@ module.exports = {
         const BASE_URL = "https://api.listenbrainz.org/1/validate-token";
         const AUTH_HEADER = {
           Authorization: `Token ${token}`,
+          "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
         };
 
         // Make request to ListenBrainz

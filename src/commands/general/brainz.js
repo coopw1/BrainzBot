@@ -9,7 +9,6 @@ const {
   ComponentType,
 } = require("discord.js");
 const axios = require("axios").default;
-require("dotenv").config();
 
 const getCurrentlyPlaying = require("./util/getCurrentlyPlaying");
 const getRecentlyPlayed = require("./util/getRecentlyPlayed");
@@ -68,6 +67,7 @@ async function checkIfLoved(
   const BASE_URL = `https://api.listenbrainz.org/1/feedback/user/${brainzUsername}/get-feedback-for-recordings`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
+    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
   };
   const PARAMS = {
     params: {
@@ -165,6 +165,7 @@ async function sendFeedback(feedback, listenBrainzToken, MBID, MSID) {
   const BASE_URL = `https://api.listenbrainz.org/1/feedback/recording-feedback`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
+    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
   };
   const PARAMS = {
     recording_mbid: MBID,

@@ -21,6 +21,9 @@ module.exports = async (
       params: {
         query: ``,
       },
+      headers: {
+        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      },
     };
     if (artistName) {
       PARAMS.params.query = PARAMS.params.query + `artist:${artistName}`;

@@ -42,6 +42,7 @@ module.exports = {
         const BASE_URL = `https://api.listenbrainz.org/1/search/users/`;
         const AUTH_HEADER = {
           Authorization: `Token ${process.env.LISTENBRAINZ_TOKEN}`,
+          "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
         };
 
         const PARAMS = {
