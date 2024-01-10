@@ -1,6 +1,12 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+const {
+  ApplicationCommandOptionType,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+  ComponentType,
+} = require("discord.js");
 
-const pagination = require("../util/pagination");
 const axios = require("axios").default;
 
 module.exports = {
@@ -265,16 +271,20 @@ module.exports = {
       params: {
         query: query.slice(0, -1),
       },
+      headers: {
+        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      },
     };
 
     // Make request to MusicBrainz
     const response = await axios.get(BASE_URL, PARAMS);
 
     const items = await response.data[searchType];
-    let maxLength = items.length;
+    let maxPages = items.length;
 
     // Create list of all 25 items
-    const embeds = [];
+    let embeds = [];
+    let MBIDS = [];
 
     items.forEach((item, index) => {
       let MBID;
@@ -379,6 +389,8 @@ module.exports = {
           });
           break;
       }
+
+      MBIDS.push(MBID);
     });
     if (items.length == 0) {
       embeds[0] = new EmbedBuilder({
@@ -386,9 +398,296 @@ module.exports = {
         description: "No results found",
         color: 0x353070,
       });
-      maxLength = 1;
+      maxPages = 1;
     }
 
-    pagination(interaction, embeds, maxLength);
+    let currentPage = 0;
+    // Create left and right buttons
+    const leftButton = new ButtonBuilder({
+      customId: "left",
+      label: "<",
+      style: ButtonStyle.Primary,
+    });
+
+    const rightButton = new ButtonBuilder({
+      customId: "right",
+      label: ">",
+      style: ButtonStyle.Primary,
+    });
+
+    const relationshipButton = new ButtonBuilder({
+      customId: "relationship",
+      emoji: "🔗",
+      style: ButtonStyle.Secondary,
+    });
+
+    // Create a row with the buttons
+    const row = new ActionRowBuilder({
+      components: [leftButton, rightButton, relationshipButton],
+    });
+
+    let message;
+    // Send embed
+    if (interaction.deferred) {
+      message = await interaction.editReply({
+        embeds: [
+          embeds[currentPage].setFooter({
+            text: `Page ${currentPage + 1}/${maxPages}`,
+          }),
+        ],
+        components: [row],
+      });
+    } else if (!interaction.deferred) {
+      message = await interaction.reply({
+        embeds: [
+          embeds[currentPage].setFooter({
+            text: `Page ${currentPage + 1}/${maxPages}`,
+          }),
+        ],
+        components: [row],
+      });
+    }
+
+    // Create a collector that waits for the user to click the button
+    const buttonCollectorFilter = (i) => {
+      return i.user.id === interaction.user.id;
+    };
+    const collector = message.createMessageComponentCollector({
+      ComponentType: ComponentType.Button,
+      filter: buttonCollectorFilter,
+      time: 240_000,
+    });
+
+    setTimeout(function () {
+      row.components[0].setDisabled(true);
+      row.components[1].setDisabled(true);
+      message.edit({ components: [row] });
+    }, 240_000);
+
+    // Handle the collector
+    collector.on("collect", async (i) => {
+      // Check if the button was clicked
+      if (i.customId === "left") {
+        i.deferUpdate();
+        // User clicked left
+        // Check if first page is active to switch to last
+        if (currentPage === 0) {
+          // Switch to last page
+          currentPage = maxPages - 1;
+        } else {
+          // Switch to previous page
+          currentPage--;
+        }
+        // Edit embed to show previous 5 listens
+        await interaction.editReply({
+          embeds: [
+            embeds[currentPage].setFooter({
+              text: `Page ${currentPage + 1}/${maxPages}`,
+            }),
+          ],
+          components: [row],
+        });
+      } else if (i.customId === "right") {
+        i.deferUpdate();
+        // User clicked right
+        // Check if last page is active to switch to first
+        if (currentPage === maxPages - 1) {
+          // Switch to first page
+          currentPage = 0;
+        } else {
+          // Switch to next page
+          currentPage++;
+        }
+
+        // Edit embed to show next 5 listens
+        await interaction.editReply({
+          embeds: [
+            embeds[currentPage].setFooter({
+              text: `Page ${currentPage + 1}/${maxPages}`,
+            }),
+          ],
+          components: [row],
+        });
+      } else if (i.customId === "relationship") {
+        i.deferUpdate();
+        // User clicked relationship
+
+        const inc =
+          "area-rels+artist-rels+event-rels+instrument-rels+label-rels+place-rels+recording-rels+release-rels+release-group-rels+series-rels+url-rels+work-rels";
+        const BASE_URL = `https://musicbrainz.org/ws/2/${searchType.slice(
+          0,
+          -1
+        )}/${MBIDS[currentPage]}?inc=${inc}`;
+
+        const response = await axios.get(BASE_URL, {
+          headers: {
+            "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+          },
+        });
+        console.log(response.data.relations);
+        let areas = [];
+        let artists = [];
+        let events = [];
+        let instruments = [];
+        let labels = [];
+        let places = [];
+        let recordings = [];
+        let releases = [];
+        let releaseGroups = [];
+        let series = [];
+        let urls = [];
+        let works = [];
+        response.data.relations.forEach((relationship) => {
+          // FIXME - Might be able to just use the type to add to var without switch statement
+          console.log(relationship.type);
+          switch (relationship["target-type"]) {
+            case "area":
+              areas.push(
+                `${relationship.type} [${relationship.area.name}](https://musicbrainz.org/area/${relationship.area.id})`
+              );
+              break;
+            case "artist":
+              artists.push(
+                `${relationship.type} [${relationship.artist.name}](https://musicbrainz.org/artist/${relationship.artist.id})`
+              );
+              break;
+            case "event":
+              events.push(
+                `${relationship.type} [${relationship.event.name}](https://musicbrainz.org/event/${relationship.event.id})`
+              );
+              break;
+            case "instrument":
+              instruments.push(
+                `${relationship.type} [${relationship.instrument.name}](https://musicbrainz.org/instrument/${relationship.instrument.id})`
+              );
+              break;
+            case "label":
+              labels.push(
+                `${relationship.type} [${relationship.label.name}](https://musicbrainz.org/label/${relationship.label.id})`
+              );
+              break;
+            case "place":
+              places.push(
+                `${relationship.type} [${relationship.place.name}](https://musicbrainz.org/place/${relationship.place.id})`
+              );
+              break;
+            case "recording":
+              recordings.push(
+                `${relationship.type} [${relationship.recording.name}](https://musicbrainz.org/recording/${relationship.recording.id})`
+              );
+              break;
+            case "release":
+              releases.push(
+                `${relationship.type} [${relationship.release.name}](https://musicbrainz.org/release/${relationship.release.id})`
+              );
+              break;
+            case "release-group":
+              releaseGroups.push(
+                `${relationship.type} [${relationship["release-group"].name}](https://musicbrainz.org/release-group/${relationship["release-group"].id})`
+              );
+              break;
+            case "series":
+              series.push(
+                `${relationship.type} [${relationship.series.name}](https://musicbrainz.org/series/${relationship.series.id})`
+              );
+              break;
+            case "url":
+              urls.push(`[${relationship.type}](${relationship.url.resource})`);
+              break;
+            case "work":
+              works.push(
+                `${relationship.type} [${relationship.work.name}](https://musicbrainz.org/work/${relationship.work.id})`
+              );
+          }
+        });
+        console.log(areas);
+        console.log(artists);
+        console.log(events);
+        console.log(instruments);
+        console.log(labels);
+        console.log(places);
+        console.log(recordings);
+        console.log(releases);
+        console.log(releaseGroups);
+        console.log(series);
+        console.log(urls);
+        console.log(works);
+
+        if (areas.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Areas",
+            value: areas.join("\n"),
+          });
+        }
+        if (artists.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Artists",
+            value: artists.join("\n"),
+          });
+        }
+        if (events.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Events",
+            value: events.join("\n"),
+          });
+        }
+        if (instruments.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Instruments",
+            value: instruments.join("\n"),
+          });
+        }
+        if (labels.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Labels",
+            value: labels.join("\n"),
+          });
+        }
+        if (places.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Places",
+            value: places.join("\n"),
+          });
+        }
+        if (recordings.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Recordings",
+            value: recordings.join("\n"),
+          });
+        }
+        if (releases.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Releases",
+            value: releases.join("\n"),
+          });
+        }
+        if (releaseGroups.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Release Groups",
+            value: releaseGroups.join("\n"),
+          });
+        }
+        if (series.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Series",
+            value: series.join("\n"),
+          });
+        }
+        if (urls.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Urls",
+            value: urls.join("\n"),
+          });
+        }
+        if (works.length > 0) {
+          embeds[currentPage].addFields({
+            name: "Works",
+            value: works.join("\n"),
+          });
+        }
+
+        message.edit({ embeds: [embeds[currentPage]] });
+      }
+    });
   },
 };
