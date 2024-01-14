@@ -1,5 +1,6 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
 const getAuth = require("../util/getAuth");
+const pagination = require("../util/pagination");
 const axios = require("axios").default;
 
 async function checkUser(interaction, user) {
@@ -50,7 +51,7 @@ module.exports = {
       name: "compareuser",
       description: "A ListenBrainz username to compare against!",
       type: ApplicationCommandOptionType.String,
-      required: true,
+      required: false,
     },
     {
       name: "user",
@@ -66,59 +67,125 @@ module.exports = {
       return;
     }
 
-    await checkUser(interaction, interaction.options.get("compareuser").value);
-    if (interaction.replied) {
-      return;
-    }
-    console.log();
-
-    const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/similar-to/${
-      interaction.options.get("compareuser").value
-    }`;
-    const AUTH_HEADER = {
-      Authorization: `Token ${listenBrainzToken}`,
-      "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
-    };
-
-    const PARAMS = {
-      headers: AUTH_HEADER,
-    };
-    // Make request to MusicBrainz
-    const response = await axios.get(BASE_URL, PARAMS).catch(function (error) {
-      if (error.response) {
-        // Probably 404 meaning no similarity
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error", error.message);
+    if (interaction.options.get("compareuser")) {
+      await checkUser(
+        interaction,
+        interaction.options.get("compareuser").value
+      );
+      if (interaction.replied) {
+        return;
       }
-    });
+      console.log();
 
-    const similarity = response?.data.payload;
+      const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/similar-to/${
+        interaction.options.get("compareuser").value
+      }`;
+      const AUTH_HEADER = {
+        Authorization: `Token ${listenBrainzToken}`,
+        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      };
 
-    if (similarity === undefined) {
-      const embed = new EmbedBuilder({
-        title: `${brainzUsername} and ${
-          interaction.options.get("compareuser").value
-        }...`,
-        description: `Are **0%** similar!! haha.`,
-      });
-      interaction.editReply({ embeds: [embed] });
+      const PARAMS = {
+        headers: AUTH_HEADER,
+      };
+      // Make request to MusicBrainz
+      const response = await axios
+        .get(BASE_URL, PARAMS)
+        .catch(function (error) {
+          if (error.response) {
+            // Probably 404 meaning no similarity
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+        });
+
+      const similarity = response?.data.payload;
+
+      if (similarity === undefined) {
+        const embed = new EmbedBuilder({
+          title: `${brainzUsername} and ${
+            interaction.options.get("compareuser").value
+          }...`,
+          description: `Are **0%** similar!! haha.`,
+        });
+        interaction.editReply({ embeds: [embed] });
+      } else {
+        console.log(similarity);
+        const embed = new EmbedBuilder({
+          title: `${brainzUsername} and ${
+            interaction.options.get("compareuser").value
+          }...`,
+          description: `Are **${(similarity.similarity * 100).toFixed(
+            3
+          )}%** similar!! Woah!`,
+        });
+        interaction.editReply({ embeds: [embed] });
+      }
     } else {
-      console.log(similarity);
-      const embed = new EmbedBuilder({
-        title: `${brainzUsername} and ${
-          interaction.options.get("compareuser").value
-        }...`,
-        description: `Are **${(similarity.similarity * 100).toFixed(
-          3
-        )}%** similar!! Woah!`,
+      const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/similar-users`;
+      const AUTH_HEADER = {
+        Authorization: `Token ${listenBrainzToken}`,
+        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      };
+
+      const PARAMS = {
+        headers: AUTH_HEADER,
+      };
+      // Make request to MusicBrainz
+      const response = await axios
+        .get(BASE_URL, PARAMS)
+        .catch(function (error) {
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+        });
+
+      const similarUsers = response.data.payload;
+
+      const maxPages = Math.ceil(similarUsers.length / 10);
+
+      let descriptions = [];
+
+      for (let i = 0; i < maxPages; i++) {
+        descriptions[i] = "";
+      }
+
+      similarUsers.forEach((user, index) => {
+        descriptions[Math.floor(index / 10)] =
+          descriptions[Math.floor(index / 10)] +
+          `**[${user.user_name}](https://listenbrainz.org/user/${
+            user.user_name
+          }/)** - ${(user.similarity * 100).toFixed(3)}%\n`;
       });
-      interaction.editReply({ embeds: [embed] });
+
+      let baseEmbed = {
+        title: `Similar users for ${brainzUsername}`,
+        color: 0x353070,
+      };
+
+      let embeds = [];
+      for (let i = 0; i < maxPages; i++) {
+        embeds[i] = new EmbedBuilder(baseEmbed).setDescription(descriptions[i]);
+      }
+      pagination(interaction, embeds, maxPages);
     }
   },
 };
