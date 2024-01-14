@@ -109,7 +109,6 @@ module.exports = {
       });
       interaction.editReply({ embeds: [embed] });
     } else {
-      console.log(similarity);
       const embed = new EmbedBuilder({
         title: `${brainzUsername} and ${
           interaction.options.get("compareuser").value
