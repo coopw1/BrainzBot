@@ -15,32 +15,45 @@ module.exports = async (
   trackName,
   MBIDType = "recordings"
 ) => {
-  try {
-    const BASE_URL = `http://musicbrainz.org/ws/2/${MBIDType.slice(0, -1)}/`;
-    let PARAMS = {
-      params: {
-        query: ``,
-      },
-      headers: {
-        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
-      },
-    };
-    if (artistName) {
-      PARAMS.params.query = PARAMS.params.query + `artist:${artistName}`;
-    }
-    if (releaseName) {
-      PARAMS.params.query = PARAMS.params.query + `release:${releaseName}`;
-    }
-    if (trackName) {
-      PARAMS.params.query = PARAMS.params.query + `recording:${trackName}`;
-    }
-    // Make request to MusicBrainz
-    const response = await axios.get(BASE_URL, PARAMS);
-
-    const MBID = response.data[MBIDType][0].id;
-    return MBID;
-  } catch (error) {
-    console.log("getMBID Error: " + error);
-    return "error";
+  const BASE_URL = `http://musicbrainz.org/ws/2/${MBIDType.slice(0, -1)}/`;
+  let PARAMS = {
+    params: {
+      query: ``,
+    },
+    headers: {
+      "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    },
+  };
+  if (artistName) {
+    PARAMS.params.query = PARAMS.params.query + `artist:${artistName}`;
   }
+  if (releaseName) {
+    PARAMS.params.query = PARAMS.params.query + `release:${releaseName}`;
+  }
+  if (trackName) {
+    PARAMS.params.query = PARAMS.params.query + `recording:${trackName}`;
+  }
+  // Make request to MusicBrainz
+  const response = await axios.get(BASE_URL, PARAMS).catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+    return "error";
+  });
+
+  const MBID = response.data[MBIDType][0].id;
+  return MBID;
 };

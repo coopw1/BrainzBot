@@ -126,21 +126,35 @@ module.exports = {
               const token = i.fields.getTextInputValue("ListenBrainzToken");
               let response;
 
-              try {
-                const BASE_URL =
-                  "https://api.listenbrainz.org/1/validate-token";
-                const AUTH_HEADER = {
-                  Authorization: `Token ${token}`,
-                  "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
-                };
+              const BASE_URL = "https://api.listenbrainz.org/1/validate-token";
+              const AUTH_HEADER = {
+                Authorization: `Token ${token}`,
+                "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+              };
 
-                // Make request to ListenBrainz
-                response = await axios.get(BASE_URL, {
+              // Make request to ListenBrainz
+              response = await axios
+                .get(BASE_URL, {
                   headers: AUTH_HEADER,
+                })
+                .catch(function (error) {
+                  if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                  } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                  } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log("Error", error.message);
+                  }
+                  console.log(error.config);
                 });
-              } catch (error) {
-                console.log("Error: " + error);
-              }
 
               // Check if token is valid
               if (response.data.valid) {
@@ -221,20 +235,35 @@ module.exports = {
       const token = interaction.options.get("token").value;
       let response;
 
-      try {
-        const BASE_URL = "https://api.listenbrainz.org/1/validate-token";
-        const AUTH_HEADER = {
-          Authorization: `Token ${token}`,
-          "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
-        };
+      const BASE_URL = "https://api.listenbrainz.org/1/validate-token";
+      const AUTH_HEADER = {
+        Authorization: `Token ${token}`,
+        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      };
 
-        // Make request to ListenBrainz
-        response = await axios.get(BASE_URL, {
+      // Make request to ListenBrainz
+      response = await axios
+        .get(BASE_URL, {
           headers: AUTH_HEADER,
+        })
+        .catch(function (error) {
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+          }
+          console.log(error.config);
         });
-      } catch (error) {
-        console.log("Error: " + error);
-      }
 
       // Check if token is valid
       if (response.data.valid) {
