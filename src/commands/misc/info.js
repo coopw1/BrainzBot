@@ -12,6 +12,12 @@ module.exports = {
     const totalUsers = allUserData.length;
     const guildCount = await client.guilds.cache.size;
 
+    const guilds = await client.guilds.cache;
+    const memberCount = guilds.reduce(
+      (acc, guild) => acc + guild.memberCount,
+      0
+    );
+
     let totalSeconds = client.uptime / 1000;
     let days = Math.floor(totalSeconds / 86400);
     totalSeconds %= 86400;
@@ -71,7 +77,7 @@ module.exports = {
         },
         {
           name: "Usage",
-          value: `Total Users: ${totalUsers}\nTotal Guilds: ${guildCount}`,
+          value: `Total Members: ${memberCount}\nTotal Users: ${totalUsers}\nTotal Guilds: ${guildCount}`,
         },
         {
           name: "Library",
