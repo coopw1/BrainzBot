@@ -16,7 +16,8 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
     "jsdom": "^23.2.0",
-    "mongoose": "^8.0.4"
+    "mongoose": "^8.0.4",
+    "topgg-autoposter": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^8.56.0"
