@@ -9,8 +9,8 @@ module.exports = (exceptions = []) => {
     true
   );
 
-  for (const comamndCategory of commandCategories) {
-    const commandFiles = getAllFiles(comamndCategory);
+  for (const commandCategory of commandCategories) {
+    const commandFiles = getAllFiles(commandCategory);
 
     for (const commandFile of commandFiles) {
       // Check if the parent directory of the command file is "util"
