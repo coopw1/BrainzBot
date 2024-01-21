@@ -8,7 +8,7 @@ const userData = require("../../../schemas/userData");
  *
  * @param {Object<interaction>} interaction - The interaction containing information about the user interaction.
  * @param {boolean} noAuthNeeded - Whether to skip authentication checks.
- * @return {promise<{username: string, token: string}>} An object containing the user's ListenBrainz username and token.
+ * @return {promise<{username: string, token: string, tokenIsUsers: boolean}>} An object containing the user's ListenBrainz username and token.
  */
 module.exports = async (interaction, noAuthNeeded) => {
   if (noAuthNeeded) {
@@ -20,6 +20,7 @@ module.exports = async (interaction, noAuthNeeded) => {
     userID: interaction.user.id,
   });
 
+  let tokenIsUsers = false;
   // Check if username is provided through command or DB
   if (currentUserData === null && !interaction.options.get("user")) {
     // No username provided
@@ -80,7 +81,7 @@ module.exports = async (interaction, noAuthNeeded) => {
   let brainzUsername;
   let listenBrainzToken;
   // Check if username is provided through command
-  if (interaction.options.get("user")) {
+  if (interaction.options.get("user") && !currentUserData?.ListenBrainzToken) {
     // Get username from command
     brainzUsername = interaction.options.get("user").value;
     // Use coopw-DiscordBrainzBot's token
@@ -89,11 +90,16 @@ module.exports = async (interaction, noAuthNeeded) => {
     // Get username from DB
     brainzUsername = currentUserData.ListenBrainzUsername;
     listenBrainzToken = process.env.LISTENBRAINZ_TOKEN;
+  } else if (interaction.options.get("user")) {
+    // Get username from command
+    brainzUsername = interaction.options.get("user").value;
+    listenBrainzToken = currentUserData.ListenBrainzToken;
   } else {
     // Get username from DB
     brainzUsername = currentUserData.ListenBrainzUsername;
     listenBrainzToken = currentUserData.ListenBrainzToken;
+    tokenIsUsers = true;
   }
 
-  return { brainzUsername, listenBrainzToken };
+  return { brainzUsername, listenBrainzToken, tokenIsUsers };
 };

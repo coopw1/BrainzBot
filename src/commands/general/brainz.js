@@ -215,7 +215,9 @@ module.exports = {
     let MSID;
     let score;
 
-    const { brainzUsername, listenBrainzToken } = await getAuth(interaction);
+    const { brainzUsername, listenBrainzToken, tokenIsUsers } = await getAuth(
+      interaction
+    );
     if (interaction.replied) {
       return;
     }
@@ -419,7 +421,11 @@ module.exports = {
 
     // Send embed
     // If there is a button row and the token isn't the default one
-    if (buttonRow1 && listenBrainzToken !== process.env.LISTENBRAINZ_TOKEN) {
+    if (
+      buttonRow1 &&
+      listenBrainzToken !== process.env.LISTENBRAINZ_TOKEN &&
+      tokenIsUsers
+    ) {
       const message = await interaction.editReply({
         embeds: [embed],
         components: [buttonRow1],
