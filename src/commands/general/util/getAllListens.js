@@ -19,6 +19,9 @@ module.exports = async (
     listenBrainzToken,
     brainzUsername
   );
+  if (totalScrobbles < maxCount) {
+    maxCount = totalScrobbles;
+  }
 
   const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
   const AUTH_HEADER = {
@@ -78,9 +81,10 @@ module.exports = async (
     lastResponseCount = response.data.payload.count;
 
     interaction.editReply({
-      content: `Retrieved ${responses.count}/${totalScrobbles} listens. (${
-        (responses.count / totalScrobbles) * 100
-      }%)`,
+      content: `Retrieved ${responses.count}/${maxCount} listens. (${(
+        (responses.count / maxCount) *
+        100
+      ).toFixed(2)}%)`,
     });
   }
 
