@@ -32,7 +32,7 @@ module.exports = async (
   let PARAMS = {
     headers: AUTH_HEADER,
     params: {
-      count: 1000,
+      count: maxCount,
       max_ts: 0,
     },
   };
@@ -76,9 +76,10 @@ module.exports = async (
     responses.oldest_listen_ts = lastResponse.oldest_listen_ts;
     responses.user_id = lastResponse.user_id;
 
-    PARAMS.params.max_ts = lastResponse.listens.slice(-1)[0].listened_at;
-
     lastResponseCount = response.data.payload.count;
+
+    PARAMS.params.max_ts = lastResponse.listens.slice(-1)[0].listened_at;
+    PARAMS.params.count = maxCount - responses.count;
 
     interaction.editReply({
       content: `Retrieved ${responses.count}/${maxCount} listens. (${(
