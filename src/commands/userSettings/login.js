@@ -220,9 +220,11 @@ module.exports = {
                 "* Used to make requests to ListenBrainz.\n" +
                 "* Carries the risks that come with giving full access to your ListenBrainz account.\n" +
                 "* Will never be shared with anyone.\n" +
+                "* Helps limit issues with API ratelimiting\n" +
                 "### Username\n" +
                 "* Can be used for most of the bot's functionality.\n" +
-                "* Will not be able to use any functionality that requires authentication, such as liking songs.\n"
+                "* Will not be able to use any functionality that requires authentication, such as liking songs.\n" +
+                '* Will not be able to use commands that are "spammy" to the API, such as /big.'
             )
             .setColor(0xeb743b);
           // Send embed
