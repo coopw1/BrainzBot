@@ -1,3 +1,5 @@
+const getTotalScrobbles = require("./getTotalScrobbles");
+
 const axios = require("axios").default;
 
 /**
@@ -7,7 +9,17 @@ const axios = require("axios").default;
  * @param {string} brainzUsername - The username of the user whose recently played tracks are to be retrieved.
  * @return {promise<Object>} An object of recently played tracks.
  */
-module.exports = async (listenBrainzToken, brainzUsername) => {
+module.exports = async (
+  listenBrainzToken,
+  brainzUsername,
+  maxCount,
+  interaction
+) => {
+  const totalScrobbles = await getTotalScrobbles(
+    listenBrainzToken,
+    brainzUsername
+  );
+
   const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
@@ -30,7 +42,7 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
     user_id: "",
   };
   let lastResponseCount = 1000;
-  while (lastResponseCount === 1000) {
+  while (lastResponseCount === 1000 && responses.count < maxCount) {
     const response = await axios.get(BASE_URL, PARAMS).catch(function (error) {
       if (error.response) {
         // The request was made and the server responded with a status code
@@ -64,6 +76,13 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
     PARAMS.params.max_ts = lastResponse.listens.slice(-1)[0].listened_at;
 
     lastResponseCount = response.data.payload.count;
+
+    interaction.editReply({
+      content: `Retrieved ${responses.count}/${totalScrobbles} listens. (${
+        (responses.count / totalScrobbles) * 100
+      }%)`,
+    });
   }
+
   return responses;
 };

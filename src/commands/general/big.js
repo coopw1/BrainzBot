@@ -26,6 +26,13 @@ module.exports = {
           type: ApplicationCommandOptionType.String,
           required: false,
         },
+        {
+          name: "count",
+          description: "Max number of listens to get! Caps at 5000 by default.",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+          minValue: 1000,
+        },
       ],
     },
   ],
@@ -46,7 +53,16 @@ module.exports = {
       return;
     }
 
-    const allListens = await getAllListens(listenBrainzToken, brainzUsername);
+    const maxListens = interaction.options.get("count")
+      ? interaction.options.get("count").value
+      : 5000;
+
+    const allListens = await getAllListens(
+      listenBrainzToken,
+      brainzUsername,
+      maxListens,
+      interaction
+    );
 
     const maxPages = Math.ceil(allListens.count / 10);
 
