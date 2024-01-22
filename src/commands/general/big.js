@@ -31,7 +31,6 @@ module.exports = {
           description: "Max number of listens to get! Caps at 5000 by default.",
           type: ApplicationCommandOptionType.Integer,
           required: false,
-          minValue: 1000,
         },
       ],
     },
@@ -117,8 +116,19 @@ module.exports = {
 
     let embeds = [];
     for (let i = 0; i < maxPages; i++) {
-      embeds[i] = new EmbedBuilder(baseEmbed).setDescription(descriptions[i]);
+      if (descriptions[i].length > 4096) {
+        embeds.push(
+          new EmbedBuilder(baseEmbed)
+            .setDescription(descriptions[i].slice(0, 4096))
+            .addFields({ name: "Overflow", value: descriptions[i].slice(4096) })
+        );
+      } else {
+        embeds.push(
+          new EmbedBuilder(baseEmbed).setDescription(descriptions[i])
+        );
+      }
     }
+
     pagination(
       interaction,
       embeds,
