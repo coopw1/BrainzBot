@@ -12,7 +12,8 @@ const {
 
 module.exports = {
   name: "big",
-  description: "Big",
+  description:
+    "Like /recent, but bigger! Gets as many recent listens as you want.",
   category: "General",
   options: [
     {
