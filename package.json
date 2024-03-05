@@ -16,7 +16,7 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "jsdom": "^24.0.0",
-    "mongoose": "^8.2.0",
+    "mongoose": "^8.2.1",
     "topgg-autoposter": "^2.0.2"
   },
   "devDependencies": {
