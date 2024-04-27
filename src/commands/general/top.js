@@ -325,7 +325,7 @@ module.exports = {
           .setColor(0x353070);
       }
 
-      interaction.editReply({ embeds: [embed], ephemeral: false });
+      interaction.reply({ embeds: [embed], ephemeral: false });
       return;
     }
 
