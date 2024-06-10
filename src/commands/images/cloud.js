@@ -257,6 +257,8 @@ module.exports = {
         tempWordCloudString += item.track_metadata.track_name + " ";
       });
 
+      tempWordCloudString = tempWordCloudString.replace(/\(|\)/g, "");
+
       wordCloudList = tempWordCloudString.split(" ");
 
       const commonWords = [
