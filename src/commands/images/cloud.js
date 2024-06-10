@@ -258,6 +258,47 @@ module.exports = {
       });
 
       wordCloudList = tempWordCloudString.split(" ");
+
+      const commonWords = [
+        "the",
+        "a",
+        "an",
+        "remastered",
+        "ft.",
+        "feat.",
+        "ft",
+        "feat",
+        "and",
+        "or",
+        "of",
+        "in",
+        "on",
+        "at",
+        "to",
+        "from",
+        "with",
+        "by",
+        "he",
+        "she",
+        "they",
+        "it",
+        "her",
+        "his",
+        "their",
+        "its",
+        "hers",
+        "theirs",
+        "i",
+        "i'd",
+        "my",
+        "me",
+        "-",
+        "you",
+      ];
+
+      wordCloudList = wordCloudList.filter(
+        (word) => !commonWords.includes(word.toLowerCase())
+      );
     }
 
     let wordCount = wordCloudList.reduce((acc, word) => {
