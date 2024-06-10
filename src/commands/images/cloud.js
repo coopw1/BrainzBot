@@ -59,64 +59,140 @@ module.exports = {
 
   options: [
     {
-      name: "user",
-      description: "A ListenBrainz username",
-      type: ApplicationCommandOptionType.String,
-      required: false,
-    },
-    {
       name: "tags",
-      description: "The number of tags to display",
-      type: ApplicationCommandOptionType.Integer,
-      required: false,
+      description:
+        "Generate a word cloud from the tags on your recent listens!",
+      type: ApplicationCommandOptionType.Subcommand,
+      options: [
+        {
+          name: "user",
+          description: "A ListenBrainz username",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "number",
+          description: "The number of tags to display",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "background-color",
+          description: "The background color of the word cloud",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "color",
+          description: "The color of the words in the word cloud",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "image-size-x",
+          description: "The width of the image",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "image-size-y",
+          description: "The height of the image",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "min-size",
+          description: "The minimum size of the words (default 1)",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "max-size",
+          description: "The maximum size of the words (default 100)",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "grid-size",
+          description: "The grid size of the word cloud",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "details",
+          description: "Display details about the word cloud",
+          type: ApplicationCommandOptionType.Boolean,
+          required: false,
+        },
+      ],
     },
     {
-      name: "background-color",
-      description: "The background color of the word cloud",
-      type: ApplicationCommandOptionType.String,
-      required: false,
-    },
-    {
-      name: "color",
-      description: "The color of the words in the word cloud",
-      type: ApplicationCommandOptionType.String,
-      required: false,
-    },
-    {
-      name: "image-size-x",
-      description: "The width of the image",
-      type: ApplicationCommandOptionType.Integer,
-      required: false,
-    },
-    {
-      name: "image-size-y",
-      description: "The height of the image",
-      type: ApplicationCommandOptionType.Integer,
-      required: false,
-    },
-    {
-      name: "min-size",
-      description: "The minimum size of the words (default 1)",
-      type: ApplicationCommandOptionType.Integer,
-      required: false,
-    },
-    {
-      name: "max-size",
-      description: "The maximum size of the words (default 100)",
-      type: ApplicationCommandOptionType.Integer,
-      required: false,
-    },
-    {
-      name: "grid-size",
-      description: "The grid size of the word cloud",
-      type: ApplicationCommandOptionType.Integer,
-      required: false,
-    },
-    {
-      name: "details",
-      description: "Display details about the word cloud",
-      type: ApplicationCommandOptionType.Boolean,
-      required: false,
+      name: "titles",
+      description:
+        "Generate a word cloud from the titles of your recent listens!",
+      type: ApplicationCommandOptionType.Subcommand,
+      options: [
+        {
+          name: "user",
+          description: "A ListenBrainz username",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "number",
+          description: "The number of titles to display",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "background-color",
+          description: "The background color of the word cloud",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "color",
+          description: "The color of the words in the word cloud",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+        {
+          name: "image-size-x",
+          description: "The width of the image",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "image-size-y",
+          description: "The height of the image",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "min-size",
+          description: "The minimum size of the words (default 1)",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "max-size",
+          description: "The maximum size of the words (default 100)",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "grid-size",
+          description: "The grid size of the word cloud",
+          type: ApplicationCommandOptionType.Integer,
+          required: false,
+        },
+        {
+          name: "details",
+          description: "Display details about the word cloud",
+          type: ApplicationCommandOptionType.Boolean,
+          required: false,
+        },
+      ],
     },
   ],
 
@@ -131,7 +207,7 @@ module.exports = {
     const backgroundColor =
       interaction.options.get("background-color")?.value || "rgba(0,0,0,0)";
     const color = interaction.options.get("color")?.value || "#666";
-    const numberOfTags = interaction.options.get("tags")?.value || 500;
+    const numberOfTags = interaction.options.get("number")?.value || 500;
     const minSize = interaction.options.get("min-size")?.value || 1;
     const maxSize = interaction.options.get("max-size")?.value || 100;
     const gridSize = interaction.options.get("grid-size")?.value || 4;
@@ -142,38 +218,47 @@ module.exports = {
       1000
     );
 
-    let recentlyPlayedWithMBID = [];
-    recentlyPlayed.listens.forEach((item) => {
-      if (item.track_metadata.mbid_mapping) {
-        recentlyPlayedWithMBID.push(item);
-      }
-    });
-
-    let MBIDList = [];
-    recentlyPlayedWithMBID.forEach(async (item) => {
-      MBIDList.push(item.track_metadata.mbid_mapping.recording_mbid);
-    });
-
-    const allTagsList = await getSongTags(MBIDList, listenBrainzToken);
-
     let wordCloudList = [];
-    Object.values(allTagsList).forEach((tags) => {
-      if (tags.tag.artist[0]) {
-        tags.tag.artist.forEach((tag) => {
-          wordCloudList.push(tag.tag);
-        });
-      }
-      if (tags.tag.recording[0]) {
-        tags.tag.recording.forEach((tag) => {
-          wordCloudList.push(tag.tag);
-        });
-      }
-      if (tags.tag.release_group[0]) {
-        tags.tag.release_group.forEach((tag) => {
-          wordCloudList.push(tag.tag);
-        });
-      }
-    });
+    if (interaction.options.getSubcommand() === "tags") {
+      let recentlyPlayedWithMBID = [];
+      recentlyPlayed.listens.forEach((item) => {
+        if (item.track_metadata.mbid_mapping) {
+          recentlyPlayedWithMBID.push(item);
+        }
+      });
+
+      let MBIDList = [];
+      recentlyPlayedWithMBID.forEach(async (item) => {
+        MBIDList.push(item.track_metadata.mbid_mapping.recording_mbid);
+      });
+
+      const allTagsList = await getSongTags(MBIDList, listenBrainzToken);
+
+      Object.values(allTagsList).forEach((tags) => {
+        if (tags.tag.artist[0]) {
+          tags.tag.artist.forEach((tag) => {
+            wordCloudList.push(tag.tag);
+          });
+        }
+        if (tags.tag.recording[0]) {
+          tags.tag.recording.forEach((tag) => {
+            wordCloudList.push(tag.tag);
+          });
+        }
+        if (tags.tag.release_group[0]) {
+          tags.tag.release_group.forEach((tag) => {
+            wordCloudList.push(tag.tag);
+          });
+        }
+      });
+    } else if (interaction.options.getSubcommand() === "titles") {
+      let tempWordCloudString = "";
+      recentlyPlayed.listens.forEach((item) => {
+        tempWordCloudString += item.track_metadata.track_name + " ";
+      });
+
+      wordCloudList = tempWordCloudString.split(" ");
+    }
 
     let wordCount = wordCloudList.reduce((acc, word) => {
       acc[word] = (acc[word] || 0) + 1;
