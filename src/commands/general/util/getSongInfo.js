@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../config.json");
+const { devEmail } = require("../../../../config.json");
 
 /**
  * Retrieves song metadata from the ListenBrainz API based on the provided artist, release, and track names.

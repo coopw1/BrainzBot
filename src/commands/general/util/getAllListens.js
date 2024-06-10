@@ -2,7 +2,7 @@ const getTotalScrobbles = require("./getTotalScrobbles");
 
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../config.json");
+const { devEmail } = require("../../../../config.json");
 
 /**
  * Retrieves the all the tracks of a user from the ListenBrainz API.

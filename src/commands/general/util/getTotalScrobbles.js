@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../config.json");
+const { devEmail } = require("../../../../config.json");
 
 /**
  * Fetches the total number of scrobbles for a given user from ListenBrainz API.
