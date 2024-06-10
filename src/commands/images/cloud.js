@@ -112,6 +112,12 @@ module.exports = {
       type: ApplicationCommandOptionType.Integer,
       required: false,
     },
+    {
+      name: "details",
+      description: "Display details about the word cloud",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false,
+    },
   ],
 
   callback: async (client, interaction) => {
@@ -205,6 +211,16 @@ module.exports = {
       name: "chart.png",
     });
 
-    interaction.editReply({ files: [attachment] });
+    if (interaction.options.get("details")) {
+      let details = "";
+      list.forEach((item, index) => {
+        if (index <= 20) {
+          details += `${item[0]}: ${item[1]}\n`;
+        }
+      });
+      interaction.editReply({ files: [attachment], content: details });
+    } else {
+      interaction.editReply({ files: [attachment] });
+    }
   },
 };
