@@ -124,6 +124,46 @@ module.exports = {
           type: ApplicationCommandOptionType.Boolean,
           required: false,
         },
+        {
+          name: "shape",
+          description: "The shape of the words",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+          choices: [
+            {
+              name: "Circle",
+              value: "circle",
+            },
+            {
+              name: "Cardioid (apple or heart shape curve)",
+              value: "cardioid",
+            },
+            {
+              name: "Square",
+              value: "square",
+            },
+            {
+              name: "Diamond",
+              value: "diamond",
+            },
+            {
+              name: "Triangle",
+              value: "triangle",
+            },
+            {
+              name: "Triangle Forward",
+              value: "triangle-forward",
+            },
+            {
+              name: "Pentagon",
+              value: "pentagon",
+            },
+            {
+              name: "Star",
+              value: "star",
+            },
+          ],
+        },
       ],
     },
     {
@@ -192,6 +232,46 @@ module.exports = {
           type: ApplicationCommandOptionType.Boolean,
           required: false,
         },
+        {
+          name: "shape",
+          description: "The shape of the words",
+          type: ApplicationCommandOptionType.String,
+          required: false,
+          choices: [
+            {
+              name: "Circle",
+              value: "circle",
+            },
+            {
+              name: "Cardioid (apple or heart shape curve)",
+              value: "cardioid",
+            },
+            {
+              name: "Square",
+              value: "square",
+            },
+            {
+              name: "Diamond",
+              value: "diamond",
+            },
+            {
+              name: "Triangle",
+              value: "triangle",
+            },
+            {
+              name: "Triangle Forward",
+              value: "triangle-forward",
+            },
+            {
+              name: "Pentagon",
+              value: "pentagon",
+            },
+            {
+              name: "Star",
+              value: "star",
+            },
+          ],
+        },
       ],
     },
   ],
@@ -211,6 +291,7 @@ module.exports = {
     const minSize = interaction.options.get("min-size")?.value || 1;
     const maxSize = interaction.options.get("max-size")?.value || 100;
     const gridSize = interaction.options.get("grid-size")?.value || 4;
+    const shape = interaction.options.get("shape")?.value || "circle";
 
     const recentlyPlayed = await getAllListens(
       listenBrainzToken,
@@ -271,6 +352,7 @@ module.exports = {
         "ft",
         "feat",
         "and",
+        "&",
         "or",
         "of",
         "in",
@@ -296,6 +378,9 @@ module.exports = {
         "me",
         "-",
         "you",
+        "remix",
+        "remixes",
+        "mix",
       ];
 
       wordCloudList = wordCloudList.filter(
@@ -327,7 +412,7 @@ module.exports = {
       sizeRange: [minSize, maxSize],
       color: color,
       fontFamily: `"PingFang SC", "Microsoft YaHei", "Segoe UI Emoji", "Segoe UI Emoji","Segoe UI Historic"`,
-      //   shape: "circle",
+      shape: shape,
     };
 
     const wordcloud = WordCloud(canvas, { list, ...options });
