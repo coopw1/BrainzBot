@@ -339,8 +339,8 @@ module.exports = {
       });
 
       tempWordCloudString = tempWordCloudString
-        .replace(/(\w)\((\w)/g, "$1 $2") // Replace ( with space if it's between two words
-        .replace(/(\w)\)(\w)/g, "$1 $2") // Replace ) with space if it's between two words
+        .replace(/(\S)\((\S)/g, "$1 $2") // Replace ( with space if it's between two words
+        .replace(/(\S)\)(\S)/g, "$1 $2") // Replace ) with space if it's between two words
         .replace(/\(|\)/g, "") // Remove any remaining parentheses
         .replace(",", ""); // Remove any commas
 
