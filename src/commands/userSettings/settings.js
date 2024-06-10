@@ -3,6 +3,8 @@ const axios = require("axios").default;
 
 const userData = require("../../../schemas/userData");
 
+const { devEmail } = require("../../../config.json");
+
 module.exports = {
   name: "settings",
   description: "Get your user settings",
@@ -42,7 +44,7 @@ module.exports = {
         const BASE_URL = `https://api.listenbrainz.org/1/search/users/`;
         const AUTH_HEADER = {
           Authorization: `Token ${process.env.LISTENBRAINZ_TOKEN}`,
-          "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+          "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
         };
 
         const PARAMS = {

@@ -1,5 +1,7 @@
 const axios = require("axios").default;
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Retrieves the URL of the album cover image for a given MusicBrainz recording MBID.
  *
@@ -12,7 +14,7 @@ module.exports = async (MBID) => {
   const BASE_URL = "http://musicbrainz.org/ws/2/recording/";
   const PARAMS = {
     headers: {
-      "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
     },
     params: {
       query: `rid:${MBID}`,

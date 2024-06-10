@@ -17,6 +17,8 @@ const getTotalScrobbles = require("./util/getTotalScrobbles");
 const getSongInfo = require("./util/getSongInfo");
 const getAuth = require("../util/getAuth");
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Checks if the currently playing song matches the most recently played song.
  *
@@ -67,7 +69,7 @@ async function checkIfLoved(
   const BASE_URL = `https://api.listenbrainz.org/1/feedback/user/${brainzUsername}/get-feedback-for-recordings`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
-    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
   const PARAMS = {
     params: {
@@ -165,7 +167,7 @@ async function sendFeedback(feedback, listenBrainzToken, MBID, MSID) {
   const BASE_URL = `https://api.listenbrainz.org/1/feedback/recording-feedback`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
-    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
   const PARAMS = {
     recording_mbid: MBID,

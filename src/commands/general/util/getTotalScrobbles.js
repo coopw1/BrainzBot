@@ -1,5 +1,7 @@
 const axios = require("axios").default;
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Fetches the total number of scrobbles for a given user from ListenBrainz API.
  *
@@ -11,7 +13,7 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
   const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listen-count`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
-    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
 
   // Make request to ListenBrainz

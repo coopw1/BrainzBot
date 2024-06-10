@@ -3,11 +3,13 @@ const getAuth = require("../util/getAuth");
 const pagination = require("../util/pagination");
 const axios = require("axios").default;
 
+const { devEmail } = require("../../../config.json");
+
 async function checkUser(interaction, user) {
   // Make sure that user exists
   const BASE_URL = `https://api.listenbrainz.org/1/search/users/`;
   const AUTH_HEADER = {
-    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
 
   const PARAMS = {
@@ -82,7 +84,7 @@ module.exports = {
       }`;
       const AUTH_HEADER = {
         Authorization: `Token ${listenBrainzToken}`,
-        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+        "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
       };
 
       const PARAMS = {
@@ -130,7 +132,7 @@ module.exports = {
       const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/similar-users`;
       const AUTH_HEADER = {
         Authorization: `Token ${listenBrainzToken}`,
-        "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+        "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
       };
 
       const PARAMS = {

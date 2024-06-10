@@ -1,5 +1,7 @@
 const axios = require("axios").default;
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Retrieves song metadata from the ListenBrainz API based on the provided artist, release, and track names.
  *
@@ -18,7 +20,7 @@ module.exports = async (
   const BASE_URL = `https://api.listenbrainz.org/1/metadata/lookup/`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
-    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
   const PARAMS = {
     params: {

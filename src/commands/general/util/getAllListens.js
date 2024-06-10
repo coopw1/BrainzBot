@@ -2,11 +2,14 @@ const getTotalScrobbles = require("./getTotalScrobbles");
 
 const axios = require("axios").default;
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Retrieves the all the tracks of a user from the ListenBrainz API.
  *
  * @param {string} listenBrainzToken - The authentication token for accessing the ListenBrainz API.
  * @param {string} brainzUsername - The username of the user whose recently played tracks are to be retrieved.
+ * @param {number} [maxCount] - The maximum number of listens to retrieve.
  * @return {promise<Object>} An object of recently played tracks.
  */
 module.exports = async (
@@ -26,7 +29,7 @@ module.exports = async (
   const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/listens`;
   const AUTH_HEADER = {
     Authorization: `Token ${listenBrainzToken}`,
-    "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
 
   let PARAMS = {
@@ -81,12 +84,14 @@ module.exports = async (
     PARAMS.params.max_ts = lastResponse.listens.slice(-1)[0].listened_at;
     PARAMS.params.count = maxCount - responses.count;
 
-    interaction.editReply({
-      content: `Retrieved ${responses.count}/${maxCount} listens. (${(
-        (responses.count / maxCount) *
-        100
-      ).toFixed(2)}%)`,
-    });
+    if (interaction) {
+      interaction.editReply({
+        content: `Retrieved ${responses.count}/${maxCount} listens. (${(
+          (responses.count / maxCount) *
+          100
+        ).toFixed(2)}%)`,
+      });
+    }
   }
 
   return responses;

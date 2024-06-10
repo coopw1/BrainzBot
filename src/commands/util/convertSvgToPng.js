@@ -6,6 +6,8 @@ const fetch = require("node-fetch");
 const { Canvg, presets } = require("canvg");
 const axios = require("axios");
 
+const { devEmail } = require("../../../config.json");
+
 const preset = presets.node({
   DOMParser,
   canvas,
@@ -20,7 +22,7 @@ const preset = presets.node({
  */
 module.exports = async (link) => {
   const response = await axios.get(link, {
-    headers: { "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)" },
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   });
   const svg = response.data;
   const canvas = preset.createCanvas(800, 600);

@@ -3,6 +3,8 @@ const axios = require("axios").default;
 
 const userData = require("../../../schemas/userData");
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Retrieves user data from the database and performs various checks based on the provided interaction.
  *
@@ -39,7 +41,7 @@ module.exports = async (interaction, noAuthNeeded) => {
     const BASE_URL = `https://api.listenbrainz.org/1/search/users/`;
     const AUTH_HEADER = {
       Authorization: `Token ${process.env.LISTENBRAINZ_TOKEN}`,
-      "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
     };
 
     const PARAMS = {

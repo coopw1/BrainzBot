@@ -1,5 +1,7 @@
 const axios = require("axios").default;
 
+const { devEmail } = require("../../../config.json");
+
 /**
  * Fetches the MusicBrainz ID of a recording, release, or artist based on the provided parameters.
  *
@@ -21,7 +23,7 @@ module.exports = async (
       query: ``,
     },
     headers: {
-      "User-Agent": "DiscordBrainzBot/1.0.0 (coopwd@skiff.com)",
+      "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
     },
   };
   if (artistName) {
