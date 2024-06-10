@@ -338,7 +338,11 @@ module.exports = {
         tempWordCloudString += item.track_metadata.track_name + " ";
       });
 
-      tempWordCloudString = tempWordCloudString.replace(/\(|\)/g, "");
+      tempWordCloudString = tempWordCloudString
+        .replace(/(\w)\((\w)/g, "$1 $2") // Replace ( with space if it's between two words
+        .replace(/(\w)\)(\w)/g, "$1 $2") // Replace ) with space if it's between two words
+        .replace(/\(|\)/g, "") // Remove any remaining parentheses
+        .replace(",", ""); // Remove any commas
 
       wordCloudList = tempWordCloudString.split(" ");
 
