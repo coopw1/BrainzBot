@@ -212,11 +212,21 @@ module.exports = {
     const maxSize = interaction.options.get("max-size")?.value || 100;
     const gridSize = interaction.options.get("grid-size")?.value || 4;
 
-    const recentlyPlayed = await getAllListens(
-      listenBrainzToken,
-      brainzUsername,
-      1000
-    );
+    let recentlyPlayed;
+    if (numberOfTags > 1000) {
+      recentlyPlayed = await getAllListens(
+        listenBrainzToken,
+        brainzUsername,
+        numberOfTags,
+        interaction
+      );
+    } else {
+      recentlyPlayed = await getAllListens(
+        listenBrainzToken,
+        brainzUsername,
+        numberOfTags
+      );
+    }
 
     let wordCloudList = [];
     if (interaction.options.getSubcommand() === "tags") {
@@ -296,6 +306,9 @@ module.exports = {
         "me",
         "-",
         "you",
+        "ver",
+        "ver.",
+        "version",
       ];
 
       wordCloudList = wordCloudList.filter(
@@ -315,6 +328,7 @@ module.exports = {
     finalList.sort((a, b) => b[1] - a[1]);
 
     let list = finalList.slice(0, numberOfTags);
+    if (numberOfTags > 1000) list = list.slice(0, 1000);
 
     const canvas = createCanvas(xDimension, yDimension);
 
@@ -329,6 +343,7 @@ module.exports = {
       fontFamily: `"PingFang SC", "Microsoft YaHei", "Segoe UI Emoji", "Segoe UI Emoji","Segoe UI Historic"`,
       //   shape: "circle",
     };
+    // interaction.editReply({ content: "Generating..." });
 
     const wordcloud = WordCloud(canvas, { list, ...options });
 
@@ -348,7 +363,7 @@ module.exports = {
       });
       interaction.editReply({ files: [attachment], content: details });
     } else {
-      interaction.editReply({ files: [attachment] });
+      interaction.editReply({ files: [attachment], content: "Done!" });
     }
   },
 };
