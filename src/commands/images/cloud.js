@@ -346,11 +346,6 @@ module.exports = {
         "the",
         "a",
         "an",
-        "remastered",
-        "ft.",
-        "feat.",
-        "ft",
-        "feat",
         "and",
         "&",
         "or",
@@ -381,6 +376,16 @@ module.exports = {
         "remix",
         "remixes",
         "mix",
+        "var.",
+        "var",
+        "inst.",
+        "instrumental",
+        "ver.",
+        "version",
+        "remastered",
+        "ft.",
+        "feat.",
+        "ft",
       ];
 
       wordCloudList = wordCloudList.filter(
@@ -411,7 +416,7 @@ module.exports = {
       backgroundColor: backgroundColor,
       sizeRange: [minSize, maxSize],
       color: color,
-      fontFamily: `"PingFang SC", "Microsoft YaHei", "Segoe UI Emoji", "Segoe UI Emoji","Segoe UI Historic"`,
+      fontFamily: `"PingFang SC", "Microsoft YaHei", "Segoe UI Emoji", "Segoe UI Emoji","Segoe UI Historic", "Tahoma"`,
       shape: shape,
     };
 
