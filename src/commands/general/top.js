@@ -35,6 +35,18 @@ module.exports = {
               required: false,
               choices: [
                 {
+                  name: "This Week",
+                  value: "this_week",
+                },
+                {
+                  name: "This Month",
+                  value: "this_month",
+                },
+                {
+                  name: "This Year",
+                  value: "this_year",
+                },
+                {
                   name: "Week",
                   value: "week",
                 },
@@ -75,6 +87,18 @@ module.exports = {
               type: ApplicationCommandOptionType.String,
               required: false,
               choices: [
+                {
+                  name: "This Week",
+                  value: "this_week",
+                },
+                {
+                  name: "This Month",
+                  value: "this_month",
+                },
+                {
+                  name: "This Year",
+                  value: "this_year",
+                },
                 {
                   name: "Week",
                   value: "week",
@@ -118,6 +142,18 @@ module.exports = {
           type: ApplicationCommandOptionType.String,
           required: false,
           choices: [
+            {
+              name: "This Week",
+              value: "this_week",
+            },
+            {
+              name: "This Month",
+              value: "this_month",
+            },
+            {
+              name: "This Year",
+              value: "this_year",
+            },
             {
               name: "Week",
               value: "week",
@@ -166,6 +202,18 @@ module.exports = {
           required: false,
           choices: [
             {
+              name: "This Week",
+              value: "this_week",
+            },
+            {
+              name: "This Month",
+              value: "this_month",
+            },
+            {
+              name: "This Year",
+              value: "this_year",
+            },
+            {
               name: "Week",
               value: "week",
             },
@@ -212,6 +260,18 @@ module.exports = {
           type: ApplicationCommandOptionType.String,
           required: false,
           choices: [
+            {
+              name: "This Week",
+              value: "this_week",
+            },
+            {
+              name: "This Month",
+              value: "this_month",
+            },
+            {
+              name: "This Year",
+              value: "this_year",
+            },
             {
               name: "Week",
               value: "week",
@@ -445,23 +505,45 @@ module.exports = {
 
     const timeperiod = interaction.options.get("timeperiod")?.value || "week";
     let baseEmbed;
-    if (timeperiod === "all_time") {
-      baseEmbed = {
-        title: `Top All Time ${searchType} for ${brainzUsername}`,
-        color: 0x353070,
-      };
-    } else if (timeperiod === "half_yearly") {
-      baseEmbed = {
-        title: `Top Half Yearly ${searchType} for ${brainzUsername}`,
-        color: 0x353070,
-      };
-    } else {
-      baseEmbed = {
-        title: `Top ${
-          timeperiod[0].toUpperCase() + timeperiod.substring(1)
-        }ly ${searchType} for ${brainzUsername}`,
-        color: 0x353070,
-      };
+    switch (timeperiod) {
+      case "this_week":
+        baseEmbed = {
+          title: `Top ${searchType} __This Week__ for ${brainzUsername}`,
+          color: 0x353070,
+        };
+        break;
+      case "this_month":
+        baseEmbed = {
+          title: `Top ${searchType} __This Month__ for ${brainzUsername}`,
+          color: 0x353070,
+        };
+        break;
+      case "this_year":
+        baseEmbed = {
+          title: `Top ${searchType} __This Year__ for ${brainzUsername}`,
+          color: 0x353070,
+        };
+        break;
+      case "all_time":
+        baseEmbed = {
+          title: `Top __All Time__ ${searchType} for ${brainzUsername}`,
+          color: 0x353070,
+        };
+        break;
+      case "half_yearly":
+        baseEmbed = {
+          title: `Top __Half Yearly__ ${searchType} for ${brainzUsername}`,
+          color: 0x353070,
+        };
+        break;
+      default:
+        baseEmbed = {
+          title: `Top __${
+            timeperiod[0].toUpperCase() + timeperiod.substring(1)
+          }ly__ ${searchType} for ${brainzUsername}`,
+          color: 0x353070,
+        };
+        break;
     }
 
     let embeds = [];
