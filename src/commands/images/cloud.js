@@ -338,7 +338,11 @@ module.exports = {
         tempWordCloudString += item.track_metadata.track_name + " ";
       });
 
-      tempWordCloudString = tempWordCloudString.replace(/\(|\)/g, "");
+      tempWordCloudString = tempWordCloudString
+        .replace(/(\S)\((\S)/g, "$1 $2") // Replace ( with space if it's between two words
+        .replace(/(\S)\)(\S)/g, "$1 $2") // Replace ) with space if it's between two words
+        .replace(/\(|\)/g, "") // Remove any remaining parentheses
+        .replace(",", ""); // Remove any commas
 
       wordCloudList = tempWordCloudString.split(" ");
 
@@ -346,11 +350,6 @@ module.exports = {
         "the",
         "a",
         "an",
-        "remastered",
-        "ft.",
-        "feat.",
-        "ft",
-        "feat",
         "and",
         "&",
         "or",
@@ -381,6 +380,16 @@ module.exports = {
         "remix",
         "remixes",
         "mix",
+        "var.",
+        "var",
+        "inst.",
+        "instrumental",
+        "ver.",
+        "version",
+        "remastered",
+        "ft.",
+        "feat.",
+        "ft",
       ];
 
       wordCloudList = wordCloudList.filter(
@@ -411,7 +420,7 @@ module.exports = {
       backgroundColor: backgroundColor,
       sizeRange: [minSize, maxSize],
       color: color,
-      fontFamily: `"PingFang SC", "Microsoft YaHei", "Segoe UI Emoji", "Segoe UI Emoji","Segoe UI Historic"`,
+      fontFamily: `"PingFang SC", "Microsoft YaHei", "Segoe UI Emoji", "Segoe UI Emoji","Segoe UI Historic", "Tahoma"`,
       shape: shape,
     };
 
