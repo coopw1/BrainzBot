@@ -175,7 +175,7 @@ module.exports = {
             "all_time",
             false,
             "",
-            10
+            100
           );
 
           const compareUserTop = await getTopStatistics(
@@ -185,7 +185,7 @@ module.exports = {
             "all_time",
             false,
             "",
-            10
+            100
           );
 
           const userList = userTop.artists;
@@ -200,7 +200,7 @@ module.exports = {
           );
 
           description = description + "\n\n**Different top artists:**";
-          for (let i = 0; i < unique.length; i++) {
+          for (let i = 0; i < 10; i++) {
             if (unique[i].artist_mbid !== null) {
               description += `\n**[${unique[i].artist_name}](https://listenbrainz.org/artist/${unique[i].artist_mbid})** - ${unique[i].listen_count} plays`;
             } else {
