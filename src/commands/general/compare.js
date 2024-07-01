@@ -1,9 +1,17 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+const {
+  ApplicationCommandOptionType,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+  ComponentType,
+} = require("discord.js");
 const getAuth = require("../util/getAuth");
 const pagination = require("../util/pagination");
 const axios = require("axios").default;
 
 const { devEmail } = require("../../../config.json");
+const getTopStatistics = require("./util/getTopStatistics");
 
 async function checkUser(interaction, user) {
   // Make sure that user exists
@@ -109,25 +117,104 @@ module.exports = {
 
       const similarity = response?.data.payload;
 
+      let description = "";
       if (similarity === undefined) {
-        const embed = new EmbedBuilder({
-          title: `${brainzUsername} and ${
-            interaction.options.get("compareuser").value
-          }...`,
-          description: `Are **0%** similar!! haha.`,
-        });
-        interaction.editReply({ embeds: [embed] });
+        description = `Are **0%** similar!! haha.`;
       } else {
-        const embed = new EmbedBuilder({
-          title: `${brainzUsername} and ${
-            interaction.options.get("compareuser").value
-          }...`,
-          description: `Are **${(similarity.similarity * 100).toFixed(
-            3
-          )}%** similar!! Woah!`,
-        });
-        interaction.editReply({ embeds: [embed] });
+        description = `Are **${(similarity.similarity * 100).toFixed(
+          3
+        )}%** similar!! Woah!`;
       }
+      const embed = new EmbedBuilder({
+        title: `${brainzUsername} and ${
+          interaction.options.get("compareuser").value
+        }...`,
+        description: description,
+        footer: {
+          text: "Press ? to see what you don't have in common!",
+        },
+      });
+
+      const questionmarkButton = new ButtonBuilder({
+        customId: "showunsimilar",
+        label: "?",
+        style: ButtonStyle.Secondary,
+      });
+      // Create a row with the button
+      const row = new ActionRowBuilder({
+        components: [questionmarkButton],
+      });
+
+      const message = await interaction.editReply({
+        embeds: [embed],
+        components: [row],
+      });
+
+      // Create a collector that waits for the user to click the button
+      const buttonCollectorFilter = (i) => i.user.id === interaction.user.id;
+      const collector = message.createMessageComponentCollector({
+        ComponentType: ComponentType.Button,
+        filter: buttonCollectorFilter,
+        time: 180_000,
+      });
+
+      setTimeout(function () {
+        row.components[0].setDisabled(true);
+        message.edit({ components: [row] });
+      }, 180_000);
+
+      // Handle the collector
+      collector.on("collect", async (buttonInteraction) => {
+        if (buttonInteraction.customId === "showunsimilar") {
+          row.components[0].setDisabled(true);
+          message.edit({ components: [row] });
+          const userTop = await getTopStatistics(
+            listenBrainzToken,
+            brainzUsername,
+            "artists",
+            "all_time",
+            false,
+            "",
+            10
+          );
+
+          const compareUserTop = await getTopStatistics(
+            listenBrainzToken,
+            interaction.options.get("compareuser").value,
+            "artists",
+            "all_time",
+            false,
+            "",
+            10
+          );
+
+          const userList = userTop.artists;
+          const compareUserList = compareUserTop.artists;
+
+          // Find what is in compareUserList but not in userList
+          let unique = compareUserList.filter(
+            (compareUser) =>
+              !userList.some(
+                (user) => user.artist_name === compareUser.artist_name
+              )
+          );
+
+          description = description + "\n\n**Different top artists:**";
+          for (let i = 0; i < unique.length; i++) {
+            if (unique[i].artist_mbid !== null) {
+              description += `\n**[${unique[i].artist_name}](https://listenbrainz.org/artist/${unique[i].artist_mbid})** - ${unique[i].listen_count} plays`;
+            } else {
+              description += `\n**${unique[i].artist_name}** - ${unique[i].listen_count} plays`;
+            }
+          }
+
+          embed.setDescription(description);
+          embed.setFooter({ text: "Enjoy!" });
+
+          interaction.editReply({ embeds: [embed] });
+          buttonInteraction.deferUpdate();
+        }
+      });
     } else {
       const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/similar-users`;
       const AUTH_HEADER = {
