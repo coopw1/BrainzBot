@@ -267,16 +267,32 @@ module.exports = {
           currentlyPlaying.listens[0].track_metadata.additional_info
             ?.origin_url || "";
         // Add track info to embed
-        embed
-          .setTitle(`${currentlyPlaying.listens[0].track_metadata.track_name}`)
-          .setURL(currentURL)
-          .setDescription(
-            `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
-          )
-          .setAuthor({
-            iconURL: interaction.user.displayAvatarURL(),
-            name: `Now playing - ${brainzUsername}`,
-          });
+        if (currentURL === "") {
+          embed
+            .setTitle(
+              `${currentlyPlaying.listens[0].track_metadata.track_name}`
+            )
+            .setDescription(
+              `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
+            )
+            .setAuthor({
+              iconURL: interaction.user.displayAvatarURL(),
+              name: `Now playing - ${brainzUsername}`,
+            });
+        } else {
+          embed
+            .setTitle(
+              `${currentlyPlaying.listens[0].track_metadata.track_name}`
+            )
+            .setURL(currentURL)
+            .setDescription(
+              `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
+            )
+            .setAuthor({
+              iconURL: interaction.user.displayAvatarURL(),
+              name: `Now playing - ${brainzUsername}`,
+            });
+        }
 
         // Check if the track has been scrobbled
         const mostRecentSong = await checkRecentForMatch(
