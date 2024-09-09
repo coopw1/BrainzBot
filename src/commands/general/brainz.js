@@ -461,7 +461,7 @@ module.exports = {
       setTimeout(function () {
         buttonRow1.components[0].setDisabled(true);
         buttonRow1.components[1].setDisabled(true);
-        message.edit({ components: [buttonRow1] });
+        interaction.editReply({ components: [buttonRow1] });
       }, 180_000);
 
       // Handle the collector

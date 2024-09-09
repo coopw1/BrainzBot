@@ -60,7 +60,7 @@ module.exports = async (interaction, embeds, maxPages, footer = "") => {
   setTimeout(function () {
     row.components[0].setDisabled(true);
     row.components[1].setDisabled(true);
-    message.edit({ components: [row] });
+    interaction.editReply({ components: [row] });
   }, 240_000);
 
   // Handle the collector
