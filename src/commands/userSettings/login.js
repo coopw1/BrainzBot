@@ -30,6 +30,8 @@ module.exports = {
     },
   ],
   category: "Settings",
+  contexts: [0, 1, 2],
+  integrationTypes: [0, 1],
 
   callback: async (client, interaction) => {
     // Check if user has provided a token

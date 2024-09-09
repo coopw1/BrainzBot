@@ -167,6 +167,8 @@ module.exports = {
       ],
     },
   ],
+  contexts: [0, 1, 2],
+  integrationTypes: [0, 1],
 
   callback: async (client, interaction) => {
     await interaction.deferReply();

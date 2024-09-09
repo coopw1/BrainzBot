@@ -8,7 +8,8 @@ module.exports = async (client) => {
     const applicationCommands = await getApplicationCommands(client);
 
     for (const localCommand of localCommands) {
-      const { name, description, options } = localCommand;
+      const { name, description, options, contexts, integrationTypes } =
+        localCommand;
 
       const existingCommand = await applicationCommands.cache.find(
         (cmd) => cmd.name === name
@@ -25,6 +26,8 @@ module.exports = async (client) => {
           await applicationCommands.edit(existingCommand.id, {
             description,
             options,
+            contexts,
+            integrationTypes,
           });
 
           console.log(`Edited command: "${name}".`);
@@ -41,6 +44,8 @@ module.exports = async (client) => {
           name,
           description,
           options,
+          contexts,
+          integrationTypes,
         });
         console.log(`Edited command: "${name}".`);
       }

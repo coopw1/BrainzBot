@@ -6,6 +6,8 @@ module.exports = {
   name: "info",
   description: "Info",
   category: "Misc",
+  contexts: [0, 1, 2],
+  integrationTypes: [0, 1],
 
   callback: async (client, interaction) => {
     const allUserData = await userData.find();

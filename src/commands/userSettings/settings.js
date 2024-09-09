@@ -14,7 +14,6 @@ module.exports = {
       name: "user",
       description: "Save your ListenBrainz username without needing a token!",
       type: ApplicationCommandOptionType.Subcommand,
-      required: false,
       options: [
         {
           name: "username",
@@ -25,6 +24,8 @@ module.exports = {
       ],
     },
   ],
+  contexts: [0, 1, 2],
+  integrationTypes: [0, 1],
 
   callback: async (client, interaction) => {
     if (interaction.options.getSubcommand() === "user") {

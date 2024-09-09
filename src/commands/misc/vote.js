@@ -11,6 +11,8 @@ module.exports = {
   name: "vote",
   description: "Vote for the bot!!",
   category: "Misc",
+  contexts: [0, 1, 2],
+  integrationTypes: [0, 1],
 
   callback: async (client, interaction) => {
     const votedStatus = getVoteStatus(interaction);

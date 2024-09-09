@@ -4,6 +4,8 @@ module.exports = {
   name: "sponsor",
   description: "Display info about sponsoring the bot!",
   category: "Misc",
+  contexts: [0, 1, 2],
+  integrationTypes: [0, 1],
 
   callback: async (client, interaction) => {
     const embed = new EmbedBuilder({

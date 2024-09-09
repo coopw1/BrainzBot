@@ -29,7 +29,7 @@ module.exports = (existingCommand, localCommand) => {
       if (
         localOption.description !== existingOption.description ||
         localOption.type !== existingOption.type ||
-        (localOption.required || false) !== existingOption.required ||
+        localOption.required !== existingOption.required ||
         (localOption.choices?.length || 0) !==
           (existingOption.choices?.length || 0) ||
         areChoicesDifferent(
@@ -46,8 +46,22 @@ module.exports = (existingCommand, localCommand) => {
   if (
     existingCommand.description !== localCommand.description ||
     existingCommand.options?.length !== (localCommand.options?.length || 0) ||
+    (localCommand.contexts !== undefined &&
+      JSON.stringify(existingCommand.contexts) !=
+        JSON.stringify(localCommand.contexts)) ||
+    (localCommand.integrationTypes !== undefined &&
+      JSON.stringify(existingCommand.integrationTypes) !==
+        JSON.stringify(localCommand.integrationTypes)) ||
     areOptionsDifferent(existingCommand.options, localCommand.options || [])
   ) {
+    if (existingCommand.name === "big") {
+      console.log(existingCommand.options);
+      console.log(localCommand.options);
+      console.log(
+        JSON.stringify(existingCommand.options) !=
+          JSON.stringify(localCommand.options)
+      );
+    }
     return true;
   }
 
