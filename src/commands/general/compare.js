@@ -162,14 +162,14 @@ module.exports = {
 
       setTimeout(function () {
         row.components[0].setDisabled(true);
-        message.edit({ components: [row] });
+        interaction.editReply({ components: [row] });
       }, 180_000);
 
       // Handle the collector
       collector.on("collect", async (buttonInteraction) => {
         if (buttonInteraction.customId === "showunsimilar") {
           row.components[0].setDisabled(true);
-          message.edit({ components: [row] });
+          buttonInteraction.update({ components: [row] });
           const userTop = await getTopStatistics(
             listenBrainzToken,
             brainzUsername,

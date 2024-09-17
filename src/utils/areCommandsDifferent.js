@@ -54,14 +54,6 @@ module.exports = (existingCommand, localCommand) => {
         JSON.stringify(localCommand.integrationTypes)) ||
     areOptionsDifferent(existingCommand.options, localCommand.options || [])
   ) {
-    if (existingCommand.name === "big") {
-      console.log(existingCommand.options);
-      console.log(localCommand.options);
-      console.log(
-        JSON.stringify(existingCommand.options) !=
-          JSON.stringify(localCommand.options)
-      );
-    }
     return true;
   }
 

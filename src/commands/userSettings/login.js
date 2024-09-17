@@ -82,7 +82,7 @@ module.exports = {
       setTimeout(function () {
         row.components[0].setDisabled(true);
         row.components[1].setDisabled(true);
-        message.edit({ components: [row] });
+        interaction.editReply({ components: [row] });
       }, 180_000);
 
       // Handle the collector
