@@ -22,14 +22,31 @@ module.exports = async (
     Authorization: `Token ${listenBrainzToken}`,
     "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
   };
-  const PARAMS = {
-    params: {
-      artist_name: artistName,
-      release_name: releaseName,
-      recording_name: trackName,
-    },
-    headers: AUTH_HEADER,
-  };
+
+  let PARAMS;
+  // Make sure the artist, release, and track are under 250 characters combined
+  if (artistName.length + releaseName.length + trackName.length > 250) {
+    PARAMS = {
+      params: {
+        artist_name: artistName,
+        recording_name: trackName,
+        metadata: true,
+        inc: "release_group",
+      },
+      headers: AUTH_HEADER,
+    };
+  } else {
+    PARAMS = {
+      params: {
+        artist_name: artistName,
+        release_name: releaseName,
+        recording_name: trackName,
+        metadata: true,
+        inc: "release",
+      },
+      headers: AUTH_HEADER,
+    };
+  }
 
   // Make request to MusicBrainz
   const response = await axios.get(BASE_URL, PARAMS).catch(function (error) {

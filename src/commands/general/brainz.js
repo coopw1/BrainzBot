@@ -101,6 +101,44 @@ async function checkIfLoved(
   return score;
 }
 
+async function getReleaseGroupMBID(recentlyPlayed, listenBrainzToken) {
+  const BASE_URL = `https://api.listenbrainz.org/1/metadata/recording`;
+  const AUTH_HEADER = {
+    Authorization: `Token ${listenBrainzToken}`,
+    "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
+  };
+  const PARAMS = {
+    params: {
+      recording_mbids:
+        recentlyPlayed.listens[0].track_metadata.mbid_mapping.recording_mbid,
+      inc: "release",
+    },
+    headers: AUTH_HEADER,
+  };
+
+  const response = await axios.get(BASE_URL, PARAMS).catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
+
+  const MBID = Object.values(response.data)[0].release.release_group_mbid;
+  return MBID;
+}
+
 /**
  * Generates the love buttons based on the given score.
  *
@@ -275,7 +313,7 @@ module.exports = {
               `${currentlyPlaying.listens[0].track_metadata.track_name}`
             )
             .setDescription(
-              `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
+              `By **${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
             )
             .setAuthor({
               iconURL: interaction.user.displayAvatarURL(),
@@ -288,7 +326,7 @@ module.exports = {
             )
             .setURL(currentURL)
             .setDescription(
-              `**${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
+              `By **${currentlyPlaying.listens[0].track_metadata.artist_name}** - *${currentlyPlaying.listens[0].track_metadata?.release_name}*`
             )
             .setAuthor({
               iconURL: interaction.user.displayAvatarURL(),
@@ -327,15 +365,18 @@ module.exports = {
         embed
           .setTitle(`${songInfo.recording_name}`)
           .setURL(
-            `https://musicbrainz.org/recording/${songInfo.recording_mbid}`
+            `https://listenbrainz.org/album/${songInfo.metadata.release.release_group_mbid}`
           )
           .setDescription(
-            `**[${songInfo.artist_credit_name}](https://listenbrainz.org/artist/${songInfo.artist_mbids[0]})** - *[${songInfo.release_name}](https://musicbrainz.org/release/${songInfo.release_mbid})*`
+            `By **[${songInfo.artist_credit_name}](https://listenbrainz.org/artist/${songInfo.artist_mbids[0]})** - *${songInfo.release_name}*`
           )
           .setAuthor({
             iconURL: interaction.user.displayAvatarURL(),
             name: `Now playing - ${brainzUsername}`,
-          });
+          })
+          .setThumbnail(
+            `https://coverartarchive.org/release-group/${songInfo.metadata.release.release_group_mbid}/front`
+          );
 
         MBID = songInfo?.recording_mbid;
         MSID = undefined;
@@ -380,18 +421,26 @@ module.exports = {
 
       // Add track info to embed
       if (MBID) {
+        const releaseGroupMBID = await getReleaseGroupMBID(
+          mostRecentlyPlayed,
+          listenBrainzToken
+        );
+
         embed
           .setTitle(
             `${mostRecentlyPlayed.listens[0].track_metadata.track_name}`
           )
-          .setURL(`https://musicbrainz.org/recording/${MBID}`)
+          .setURL(`https://listenbrainz.org/album/${releaseGroupMBID}`)
           .setDescription(
-            `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+            `By **[${mostRecentlyPlayed.listens[0].track_metadata.artist_name}](https://listenbrainz.org/artist/${mostRecentlyPlayed.listens[0].track_metadata.mbid_mapping.artists[0].artist_mbid})** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
           )
           .setAuthor({
             iconURL: interaction.user.displayAvatarURL(),
             name: `Last track for ${brainzUsername}`,
-          });
+          })
+          .setThumbnail(
+            `https://coverartarchive.org/release-group/${releaseGroupMBID}/front`
+          );
       } else {
         const currentURL =
           mostRecentlyPlayed.listens[0].track_metadata.additional_info
@@ -403,7 +452,7 @@ module.exports = {
           )
           .setURL(currentURL)
           .setDescription(
-            `**${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
+            `By **${mostRecentlyPlayed.listens[0].track_metadata.artist_name}** - *${mostRecentlyPlayed.listens[0].track_metadata?.release_name}*`
           )
           .setAuthor({
             iconURL: interaction.user.displayAvatarURL(),
@@ -432,12 +481,12 @@ module.exports = {
       });
     }
 
-    if (!(MBID === undefined)) {
-      // Get thumbnail from MBID
-      const albumCover = await getAlbumCover(MBID);
-      // Add thumbnail
-      embed.setThumbnail(albumCover);
-    }
+    // if (!(MBID === undefined)) {
+    //   // Get thumbnail from MBID
+    //   const albumCover = await getAlbumCover(MBID);
+    //   // Add thumbnail
+    //   embed.setThumbnail(albumCover);
+    // }
 
     // Send embed
     // If there is a button row and the token isn't the default one
