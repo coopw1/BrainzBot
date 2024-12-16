@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   brainzbot:
-    image: ghcr.io/defvs/brainzbot:latest
+    image: ghcr.io/defvs/brainzbot:main
     environment:
       - TOKEN=${TOKEN}
       - DATABASE_URL=mongodb://mongodb:27017/brainzbot
