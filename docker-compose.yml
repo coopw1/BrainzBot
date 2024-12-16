@@ -2,12 +2,23 @@ version: '3.8'
 
 services:
   brainzbot:
-    image: ghcr.io/defvs/brainzbot:latest
+    image: your-dockerhub-username/brainzbot:latest
     environment:
       - TOKEN=${TOKEN}
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=mongodb://mongodb:27017/brainzbot
       - LISTENBRAINZ_TOKEN=${LISTENBRAINZ_TOKEN}
     volumes:
       - ./config.json:/usr/src/app/config.json
     ports:
       - "3000:3000"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
