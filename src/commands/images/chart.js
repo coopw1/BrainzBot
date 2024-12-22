@@ -4,7 +4,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 
-const convertSvgToPng = require("../util/convertSvgToPng");
+const convertSvgToPngImage = require("../util/convertSvgToPngImage");
 const getAuth = require("../util/getAuth");
 
 module.exports = {
@@ -107,7 +107,7 @@ module.exports = {
     // Send back image of chart
     const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timePeriod}/${dimension}/0/1024`;
 
-    const png = await convertSvgToPng(imageURL);
+    const png = await convertSvgToPngImage(imageURL);
 
     const attachment = new AttachmentBuilder(await png, {
       name: "chart.png",
