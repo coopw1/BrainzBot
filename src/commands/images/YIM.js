@@ -7,7 +7,7 @@ const {
   ActionRowBuilder,
   ComponentType,
 } = require("discord.js");
-const convertSvgToPng = require("../util/convertSvgToPng");
+const convertSvgToPng = require("../util/convertSvgToPngImage");
 const getAuth = require("../util/getAuth");
 
 module.exports = {
