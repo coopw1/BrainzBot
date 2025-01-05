@@ -5,7 +5,6 @@ const {
   ButtonStyle,
   ActionRowBuilder,
   ComponentType,
-  SystemChannelFlagsBitField,
 } = require("discord.js");
 const getAuth = require("../util/getAuth");
 const pagination = require("../util/pagination");
@@ -54,8 +53,9 @@ async function checkUser(interaction, user) {
   }
 }
 module.exports = {
-  name: "compare",
-  description: "Compare your scrobbles with another user!",
+  name: "comparelb",
+  description:
+    "Compare your scrobbles with another user! This uses ListenBrainz's comparison algorithm.",
   category: "General",
   options: [
     {
@@ -88,68 +88,53 @@ module.exports = {
       if (interaction.replied) {
         return;
       }
+      console.log();
 
-      const userArtistsFull = await getTopStatistics(
-        listenBrainzToken,
-        brainzUsername,
-        "artists",
-        "all_time",
-        false,
-        null,
-        1000
-      );
+      const BASE_URL = `https://api.listenbrainz.org/1/user/${brainzUsername}/similar-to/${
+        interaction.options.get("compareuser").value
+      }`;
+      const AUTH_HEADER = {
+        Authorization: `Token ${listenBrainzToken}`,
+        "User-Agent": `DiscordBrainzBot/1.0.0 (${devEmail})`,
+      };
 
-      const compareUserArtistsFull = await getTopStatistics(
-        listenBrainzToken,
-        interaction.options.get("compareuser").value,
-        "artists",
-        "all_time",
-        false,
-        null,
-        1000
-      );
-
-      const userTopArists = await userArtistsFull.artists;
-      const compareUserTopArtists = await compareUserArtistsFull.artists;
-
-      let max = 1000;
-      let count = 0;
-      let commonArtists = [];
-
-      if (userTopArists.length < 1000 || compareUserTopArtists.length < 1000) {
-        max = Math.min(userTopArists.length, compareUserTopArtists.length);
-      }
-      for (let i = 0; i < max; i++) {
-        for (let j = 0; j < max; j++) {
-          if (
-            userTopArists[i].artist_name ===
-            compareUserTopArtists[j].artist_name
-          ) {
-            count++;
-            commonArtists.push({
-              artistName: userTopArists[i].artist_name,
-              artistMBID: userTopArists[i].artist_mbid,
-              userListenCount: userTopArists[i].listen_count,
-              compareUserListenCount: compareUserTopArtists[j].listen_count,
-            });
-            break;
+      const PARAMS = {
+        headers: AUTH_HEADER,
+      };
+      // Make request to MusicBrainz
+      const response = await axios
+        .get(BASE_URL, PARAMS)
+        .catch(function (error) {
+          if (error.response) {
+            // Probably 404 meaning no similarity
+          } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            console.log(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
           }
-        }
+        });
+
+      const similarity = response?.data.payload;
+
+      let description = "";
+      if (similarity === undefined) {
+        description = `Are **0%** similar!! haha.`;
+      } else {
+        description = `Are **${(similarity.similarity * 100).toFixed(
+          3
+        )}%** similar!! Woah!`;
       }
-
-      const similarity = count / max;
-      console.log(count + " / " + max + " = " + similarity);
-
-      let description = `Are **${(similarity * 100).toFixed(
-        2
-      )}%** similar!! Woah!`;
       const embed = new EmbedBuilder({
         title: `${brainzUsername} and ${
           interaction.options.get("compareuser").value
         }...`,
         description: description,
         footer: {
-          text: "Press ? to see what you have in common!",
+          text: "Press ? to see what you don't have in common!",
         },
       });
 
@@ -186,13 +171,43 @@ module.exports = {
         if (buttonInteraction.customId === "showunsimilar") {
           row.components[0].setDisabled(true);
           buttonInteraction.update({ components: [row] });
+          const userTop = await getTopStatistics(
+            listenBrainzToken,
+            brainzUsername,
+            "artists",
+            "all_time",
+            false,
+            "",
+            100
+          );
 
-          description = description + "\n\n**Similar top artists:**";
+          const compareUserTop = await getTopStatistics(
+            listenBrainzToken,
+            interaction.options.get("compareuser").value,
+            "artists",
+            "all_time",
+            false,
+            "",
+            100
+          );
+
+          const userList = userTop.artists;
+          const compareUserList = compareUserTop.artists;
+
+          // Find what is in compareUserList but not in userList
+          let unique = compareUserList.filter(
+            (compareUser) =>
+              !userList.some(
+                (user) => user.artist_name === compareUser.artist_name
+              )
+          );
+
+          description = description + "\n\n**Different top artists:**";
           for (let i = 0; i < 10; i++) {
-            if (commonArtists[i].artistMBID !== null) {
-              description += `\n**[${commonArtists[i].artistName}](https://listenbrainz.org/artist/${commonArtists[i].artistMBID})** - ${commonArtists[i].userListenCount} vs ${commonArtists[i].compareUserListenCount} plays`;
+            if (unique[i].artist_mbid !== null) {
+              description += `\n**[${unique[i].artist_name}](https://listenbrainz.org/artist/${unique[i].artist_mbid})** - ${unique[i].listen_count} plays`;
             } else {
-              description += `\n**$${commonArtists[i].artistName}** - ${commonArtists[i].userListenCount} vs ${commonArtists[i].compareUserListenCount} plays`;
+              description += `\n**${unique[i].artist_name}** - ${unique[i].listen_count} plays`;
             }
           }
 
@@ -200,6 +215,7 @@ module.exports = {
           embed.setFooter({ text: "Enjoy!" });
 
           interaction.editReply({ embeds: [embed] });
+          buttonInteraction.deferUpdate();
         }
       });
     } else {

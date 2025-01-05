@@ -2,8 +2,9 @@ const {
   AttachmentBuilder,
   ApplicationCommandOptionType,
 } = require("discord.js");
-const convertSvgToPng = require("../util/convertSvgToPng");
 const getAuth = require("../util/getAuth");
+const convertSvgToPngImage = require("../util/convertSvgToPngImage");
+const convertSvgToPngText = require("../util/convertSvgToPngText");
 
 module.exports = {
   name: "art",
@@ -195,7 +196,12 @@ module.exports = {
 
     let link = `https://api.listenbrainz.org/1/art/${interaction.options.getSubcommand()}/${brainzUsername}/${timeperiod}/750`;
 
-    const png = await convertSvgToPng(link);
+    let png;
+    if (interaction.options.getSubcommand() === "lps-on-the-floor") {
+      png = await convertSvgToPngImage(link);
+    } else {
+      png = await convertSvgToPngText(link);
+    }
     const attachment = new AttachmentBuilder(await png, {
       name: "chart.png",
     });
