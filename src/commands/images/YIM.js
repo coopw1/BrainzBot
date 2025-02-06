@@ -12,7 +12,7 @@ const getAuth = require("../util/getAuth");
 
 module.exports = {
   name: "yim",
-  description: "Your 2023 Year in Music!",
+  description: "Your Year in Music!",
   category: "Images",
   options: [
     {
@@ -20,6 +20,12 @@ module.exports = {
       description: "A ListenBrainz username",
       type: ApplicationCommandOptionType.String,
       required: false,
+    },
+    {
+      name: "year",
+      description: "Year In Music year!",
+      type: ApplicationCommandOptionType.Integer,
+      required: true,
     },
     {
       name: "image",
@@ -67,6 +73,9 @@ module.exports = {
       return;
     }
 
+
+    let year = interaction.options.get("year").value;
+
     // Check if image type is provided
     if (!interaction.options.get("image")) {
       // If not, show all with pages
@@ -82,7 +91,7 @@ module.exports = {
 
       let attachments = [];
       for (const imageType of imageTypes) {
-        const link = `https://api.listenbrainz.org/1/art/year-in-music/2023/${brainzUsername}?image=${imageType}`;
+        const link = `https://api.listenbrainz.org/1/art/year-in-music/${year}/${brainzUsername}?image=${imageType}`;
         const png = await convertSvgToPng(link);
         const attachment = new AttachmentBuilder(await png, {
           name: `${imageType}.png`,
@@ -92,8 +101,8 @@ module.exports = {
 
       const embed = new EmbedBuilder({
         color: 0xf0eee2,
-        title: `${brainzUsername}'s 2023 Year in Music!`,
-        url: `https://listenbrainz.org/user/${brainzUsername}/year-in-music/2023`,
+        title: `${brainzUsername}'s ${year} Year in Music!`,
+        url: `https://listenbrainz.org/user/${brainzUsername}/year-in-music/${year}`,
       });
 
       let currentPage = 0;
@@ -197,7 +206,7 @@ module.exports = {
     } else {
       // If image type is provided
       const imageType = interaction.options.get("image").value;
-      const link = `https://api.listenbrainz.org/1/art/year-in-music/2023/${brainzUsername}?image=${imageType}`;
+      const link = `https://api.listenbrainz.org/1/art/year-in-music/${year}/${brainzUsername}?image=${imageType}`;
       const png = await convertSvgToPng(link);
       const attachment = new AttachmentBuilder(await png, {
         name: `${imageType}.png`,
