@@ -26,19 +26,35 @@ module.exports = {
       required: false,
       choices: [
         {
-          name: "Week",
+          name: "This week",
+          value: "this_week",
+        },
+        {
+          name: "Last week",
           value: "week",
         },
         {
-          name: "Month",
+          name: "This month",
+          value: "this_month",
+        },
+        {
+          name: "Last month",
           value: "month",
         },
         {
-          name: "Half-year",
+          name: "Last quarter",
+          value: "quarter",
+        },
+        {
+          name: "Last half year",
           value: "half_yearly",
         },
         {
-          name: "Year",
+          name: "This year",
+          value: "this_year",
+        },
+        {
+          name: "Last year",
           value: "year",
         },
         {
@@ -95,6 +111,12 @@ module.exports = {
     } else if (timePeriod === "half_yearly") {
       embed.setTitle(
         `${dimension}x${dimension} Half Yearly chart for ${brainzUsername}`
+      );
+    } else if (timePeriod.startsWith("this")) {
+      embed.setTitle(
+        `${dimension}x${dimension} This ${
+          timePeriod[5].toUpperCase() + timePeriod.substring(6)
+        }'s chart for ${brainzUsername}`
       );
     } else {
       embed.setTitle(
