@@ -16,16 +16,16 @@ module.exports = {
   category: "Images",
   options: [
     {
-      name: "user",
-      description: "A ListenBrainz username",
-      type: ApplicationCommandOptionType.String,
-      required: false,
-    },
-    {
       name: "year",
       description: "Year In Music year!",
       type: ApplicationCommandOptionType.Integer,
       required: true,
+    },
+    {
+      name: "user",
+      description: "A ListenBrainz username",
+      type: ApplicationCommandOptionType.String,
+      required: false,
     },
     {
       name: "image",
