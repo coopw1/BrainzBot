@@ -39,27 +39,31 @@ module.exports = {
                   value: "this_week",
                 },
                 {
+                  name: "Last Week",
+                  value: "week",
+                },
+                {
                   name: "This Month",
                   value: "this_month",
                 },
                 {
-                  name: "This Year",
-                  value: "this_year",
-                },
-                {
-                  name: "Week",
-                  value: "week",
-                },
-                {
-                  name: "Month",
+                  name: "Last Month",
                   value: "month",
                 },
                 {
-                  name: "Half-year",
+                  name: "Last quarter",
+                  value: "quarter",
+                },
+                {
+                  name: "Last half-year",
                   value: "half_yearly",
                 },
                 {
-                  name: "Year",
+                  name: "This year",
+                  value: "this_year",
+                },
+                {
+                  name: "Last year",
                   value: "year",
                 },
                 {
