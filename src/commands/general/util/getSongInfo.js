@@ -25,7 +25,10 @@ module.exports = async (
 
   let PARAMS;
   // Make sure the artist, release, and track are under 250 characters combined
-  if (artistName.length + releaseName.length + trackName.length > 250) {
+  if (
+    artistName.length + releaseName?.length + trackName.length > 250 ||
+    !releaseName
+  ) {
     PARAMS = {
       params: {
         artist_name: artistName,
