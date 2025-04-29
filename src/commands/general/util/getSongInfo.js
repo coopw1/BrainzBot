@@ -34,7 +34,7 @@ module.exports = async (
         artist_name: artistName,
         recording_name: trackName,
         metadata: true,
-        inc: "release_group",
+        inc: "release",
       },
       headers: AUTH_HEADER,
     };
@@ -71,7 +71,7 @@ module.exports = async (
     console.log(error.config);
     return "error";
   });
-
+  console.log(response);
   const songData = response.data;
   return songData;
 };
