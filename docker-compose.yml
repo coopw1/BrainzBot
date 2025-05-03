@@ -1,9 +1,6 @@
 # Example docker-compose file for BrainzBot
 # Make sure that either environment variables for TOKEN and LISTENBRAINZ_TOKEN are set,
 # or that you set them directly here.
-#
-# You may change the binding of the config.json file to point it to somewhere else.
-# Make sure it exists and contains what's in config.json.example
 
 services:
   brainzbot:
@@ -12,4 +9,6 @@ services:
       - TOKEN=
       - DATABASE_URL=
       - LISTENBRAINZ_TOKEN=
-      - DEV_EMAIL
+      - TOPGG_TOKEN=
+      - DEV_EMAIL=
+    restart: unless-stopped
