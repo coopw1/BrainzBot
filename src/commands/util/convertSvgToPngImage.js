@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 const { Canvg, presets } = require("canvg");
 const axios = require("axios");
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 const preset = presets.node({
   DOMParser,

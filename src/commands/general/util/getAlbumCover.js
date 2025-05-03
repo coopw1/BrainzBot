@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 /**
  * Retrieves the URL of the album cover image for a given MusicBrainz recording MBID.

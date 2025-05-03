@@ -10,7 +10,7 @@ const getAuth = require("../util/getAuth");
 const pagination = require("../util/pagination");
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 const getTopStatistics = require("./util/getTopStatistics");
 
 async function checkUser(interaction, user) {

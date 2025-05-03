@@ -17,7 +17,7 @@ const getTotalScrobbles = require("./util/getTotalScrobbles");
 const getSongInfo = require("./util/getSongInfo");
 const getAuth = require("../util/getAuth");
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 /**
  * Checks if the currently playing song matches the most recently played song.

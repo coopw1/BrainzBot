@@ -3,7 +3,7 @@ const axios = require("axios").default;
 
 const userData = require("../../../schemas/userData");
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 /**
  * Retrieves user data from the database and performs various checks based on the provided interaction.

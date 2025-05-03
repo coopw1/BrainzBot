@@ -9,7 +9,7 @@ const {
 const getAuth = require("../util/getAuth");
 const getAllListens = require("../general/util/getAllListens");
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 async function getSongTags(mbids, listenBrainzToken) {
   const BASE_URL = `https://api.listenbrainz.org/1/metadata/recording/`;

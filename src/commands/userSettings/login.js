@@ -13,7 +13,7 @@ const {
 const axios = require("axios").default;
 const userData = require("../../../schemas/userData");
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 module.exports = {
   name: "login",

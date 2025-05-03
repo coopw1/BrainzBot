@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 /**
  * Retrieves the recently played tracks of a user from the ListenBrainz API.

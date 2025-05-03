@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 
-const { devEmail } = require("../../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 /**
  * Fetches the MusicBrainz ID of a recording, release, or artist based on the provided parameters.

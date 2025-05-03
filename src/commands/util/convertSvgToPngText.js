@@ -2,7 +2,7 @@ const canvas = require("canvas");
 const axios = require("axios");
 const sharp = require("sharp");
 
-const { devEmail } = require("../../../config.json");
+const devEmail = process.env.DEV_EMAIL;
 
 /**
  * Retrieves an SVG image from the specified link and converts it to a PNG image.
