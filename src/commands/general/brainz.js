@@ -332,6 +332,14 @@ module.exports = {
               iconURL: interaction.user.displayAvatarURL(),
               name: `Now playing - ${brainzUsername}`,
             });
+
+          if (currentURL.includes("youtu.be")) {
+            embed.setThumbnail(
+              "https://img.youtube.com/vi" +
+                currentURL.split(".be")[1] +
+                "/default.jpg"
+            );
+          }
         }
 
         // Check if the track has been scrobbled
@@ -458,6 +466,14 @@ module.exports = {
             iconURL: interaction.user.displayAvatarURL(),
             name: `Last track for ${brainzUsername}`,
           });
+
+        if (currentURL.includes("youtu.be")) {
+          embed.setThumbnail(
+            "https://img.youtube.com/vi" +
+              currentURL.split(".be")[1] +
+              "/default.jpg"
+          );
+        }
       }
 
       // Check if the track has been loved
