@@ -337,7 +337,7 @@ module.exports = {
             embed.setThumbnail(
               "https://img.youtube.com/vi" +
                 currentURL.split(".be")[1] +
-                "/default.jpg"
+                "/maxresdefault.jpg"
             );
           }
         }
@@ -471,7 +471,7 @@ module.exports = {
           embed.setThumbnail(
             "https://img.youtube.com/vi" +
               currentURL.split(".be")[1] +
-              "/default.jpg"
+              "/maxresdefault.jpg"
           );
         }
       }
