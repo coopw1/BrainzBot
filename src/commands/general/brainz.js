@@ -383,7 +383,7 @@ module.exports = {
             name: `Now playing - ${brainzUsername}`,
           })
           .setThumbnail(
-            `https://coverartarchive.org/release-group/${songInfo.metadata.release.release_group_mbid}/front`
+            `https://coverartarchive.org/release-group/${songInfo.metadata.release.release_group_mbid}/front-250`
           );
 
         MBID = songInfo?.recording_mbid;
@@ -447,7 +447,7 @@ module.exports = {
             name: `Last track for ${brainzUsername}`,
           })
           .setThumbnail(
-            `https://coverartarchive.org/release-group/${releaseGroupMBID}/front`
+            `https://coverartarchive.org/release-group/${releaseGroupMBID}/front-250`
           );
       } else {
         const currentURL =
