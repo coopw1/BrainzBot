@@ -1,6 +1,11 @@
 # Use the official Node.js image.
 FROM node:18
 
+# Install Inter Font
+RUN apt-get update && apt-get install -y fonts-inter \
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -fv
+
 # Create and change to the app directory.
 WORKDIR /usr/src/app
 

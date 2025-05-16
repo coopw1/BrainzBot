@@ -1,0 +1,14 @@
+# Example docker-compose file for BrainzBot
+# Make sure that either environment variables for TOKEN and LISTENBRAINZ_TOKEN are set,
+# or that you set them directly here.
+
+services:
+  brainzbot:
+    image: ghcr.io/coopw1/brainzbot:main
+    environment:
+      - TOKEN=
+      - DATABASE_URL=
+      - LISTENBRAINZ_TOKEN=
+      - TOPGG_TOKEN=
+      - DEV_EMAIL=
+    restart: unless-stopped
