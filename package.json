@@ -14,7 +14,7 @@
     "axios": "^1.10.0",
     "canvas": "^3.1.0",
     "canvg": "^4.0.3",
-    "discord.js": "^14.20.0",
+    "discord.js": "^14.22.0",
     "dotenv": "^16.5.0",
     "jsdom": "^26.1.0",
     "mongoose": "^8.15.2",
