@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.10.0",
+    "axios": "^1.12.2",
     "canvas": "^3.1.0",
     "canvg": "^4.0.3",
     "discord.js": "^14.20.0",
