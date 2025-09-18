@@ -19,7 +19,7 @@
     "jsdom": "^26.1.0",
     "mongoose": "^8.15.2",
     "node-wordcloud": "^0.0.2",
-    "sharp": "^0.33.5",
+    "sharp": "^0.34.4",
     "topgg-autoposter": "^2.0.2"
   },
   "devDependencies": {
