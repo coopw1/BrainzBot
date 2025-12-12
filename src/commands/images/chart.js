@@ -87,6 +87,12 @@ module.exports = {
         },
       ],
     },
+    {
+      name: "skip-missing",
+      description: "Don't show albums without album art (default True)",
+      type: ApplicationCommandOptionType.Boolean,
+      required: false,
+    },
   ],
   contexts: [0, 1, 2],
   integrationTypes: [0, 1],
@@ -99,6 +105,7 @@ module.exports = {
 
     const timePeriod = interaction.options.get("timeperiod")?.value || "week";
     const dimension = interaction.options.get("dimension")?.value || 3;
+    const params = interaction.options.get("skip-missing")?.value !== false ? "" : "?skip-missing=false";
 
     // Create base embed
     const embed = new EmbedBuilder({
@@ -127,7 +134,7 @@ module.exports = {
     }
 
     // Send back image of chart
-    const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timePeriod}/${dimension}/0/1024`;
+    const imageURL = `https://api.listenbrainz.org/1/art/grid-stats/${brainzUsername}/${timePeriod}/${dimension}/0/1024${params}`;
 
     const png = await convertSvgToPngImage(imageURL);
 
