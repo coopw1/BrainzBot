@@ -41,6 +41,7 @@ module.exports = async (listenBrainzToken, brainzUsername) => {
       return "error";
     });
 
+    
   const currentlyPlaying = response.data.payload;
   return currentlyPlaying;
 };

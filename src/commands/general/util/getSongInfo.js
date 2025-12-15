@@ -71,7 +71,7 @@ module.exports = async (
     console.log(error.config);
     return "error";
   });
-  console.log(response);
+
   const songData = response.data;
   return songData;
 };
