@@ -282,7 +282,8 @@ module.exports = {
       const songInfo = await getSongInfo(
         currentlyPlaying.listens[0].track_metadata?.artist_name,
         currentlyPlaying.listens[0].track_metadata?.release_name,
-        currentlyPlaying.listens[0].track_metadata?.track_name
+        currentlyPlaying.listens[0].track_metadata?.track_name,
+        listenBrainzToken
       );
 
       // Check if songInfo is a correct match
